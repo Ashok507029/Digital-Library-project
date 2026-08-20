@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Librarian — Alexandria Digital Library</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#0d9488"/>
+        <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="10" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="13" x2="18" y2="13" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="16" x2="15" y2="16" stroke="white" stroke-width="1.2"/>
+      </svg>
+      Alexandria
+    </div>
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">Catalog</a>
+      <a class="nav-btn active" href="librarian.html">Librarian Desk</a>
+      <a class="nav-btn" href="member.html" onclick="localStorage.setItem('user_role','member');localStorage.setItem('user_email','john.doe@email.com');localStorage.setItem('user_name','John Doe');" style="color:#10b981;font-weight:600">⚡ Member Bypass</a>
+      <a class="nav-btn" href="login.html" onclick="localStorage.removeItem('user_role')" style="color:var(--red);font-weight:600">🚪 Logout</a>
+    </nav>
+    <div class="header-right">
+      <div class="branch-pill" onclick="showBranchModal()">
+        📍 <span id="current-branch">Main Branch</span>
+      </div>
+      <span class="role-badge">Librarian</span>
+      <div class="avatar">LB</div>
+    </div>
+  </header>
+
+  <!-- ── Librarian Page ──────────────────────────────────────────── -->
+  <div class="page active" id="page-librarian">
+    <div class="tabs">
+      <div class="tab active" onclick="libTab(this,'lt-issue')">Issue / Return</div>
+      <div class="tab"        onclick="libTab(this,'lt-members')">Members</div>
+      <div class="tab"        onclick="libTab(this,'lt-fines')">Fines</div>
+      <div class="tab"        onclick="libTab(this,'lt-inventory')">Inventory</div>
+      <div class="tab"        onclick="libTab(this,'lt-import')">Bulk Import</div>
+    </div>
+
+    <!-- Issue / Return -->
+    <div id="lt-issue">
+      <div class="grid-2">
+        <!-- 📤 ISSUE BOOK CARD -->
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+            <span class="card-title">📤 Issue Book</span>
+            <button class="btn btn-sm btn-ghost" style="color:var(--teal);border:1px solid var(--teal)" onclick="simulateQRScan('issue')">
+              📷 Scan Book QR
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Member ID or Name</label>
+            <input class="form-input" placeholder="Enter Member ID (e.g. M10618) or Name" id="issue-member" value="M10618 (John Doe)">
+          </div>
+
+          <!-- Book QR / Auto-Select (No manual typing required) -->
+          <div class="form-group">
+            <label class="form-label">Select Book or Scan QR <span style="color:var(--teal);font-size:11px">(Auto-Detect)</span></label>
+            <select class="form-select" id="issue-book-select" onchange="onBookSelectChange(this, 'issue-book-preview', 'issue-book')">
+              <option value="">-- Scan QR or Choose Book from Inventory --</option>
+              <option value="Dune" selected>📖 Dune (Frank Herbert) - ISBN-978-0441013593</option>
+              <option value="Clean Code">📖 Clean Code (Robert C. Martin) - ISBN-978-0132350884</option>
+              <option value="Atomic Habits">📖 Atomic Habits (James Clear) - ISBN-978-0735211292</option>
+              <option value="Shrimad Bhagavad Gita">📖 Shrimad Bhagavad Gita - ISBN-978-8120800010</option>
+              <option value="The Pragmatic Programmer">📖 The Pragmatic Programmer - ISBN-978-0201616224</option>
+            </select>
+            <input type="hidden" id="issue-book" value="Dune">
+          </div>
+
+          <!-- Auto-Filled Book Preview Card (No typing needed!) -->
+          <div id="issue-book-preview" style="background:rgba(13,148,136,0.1);border:1px solid var(--teal);border-radius:8px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+            <div style="font-size:28px">📖</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:700;color:var(--text)" id="issue-preview-title">Dune</div>
+              <div style="font-size:11px;color:var(--text2)" id="issue-preview-sub">Author: Frank Herbert · ISBN-978-0441013593</div>
+              <div style="font-size:11px;color:#10b981;margin-top:2px">✓ Auto-Scanned via Barcode · Available in Main Branch</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Due Date <span style="color:var(--teal);font-size:11px">(7 Days Free Limit)</span></label>
+            <input class="form-input" type="date" id="issue-due" value="2026-07-28">
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:700" onclick="issueBook()">
+            ⚡ 1-Click Issue Book to Member
+          </button>
+        </div>
+
+        <!-- 📥 RETURN BOOK CARD -->
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+            <span class="card-title">📥 Return Book</span>
+            <button class="btn btn-sm btn-ghost" style="color:var(--teal);border:1px solid var(--teal)" onclick="simulateQRScan('return')">
+              📷 Scan Book QR
+            </button>
+          </div>
+
+          <!-- 👤 Member ID Lookup for Return -->
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+              <span>Member ID or Student Name *</span>
+              <span style="color:var(--teal);font-size:11px;cursor:pointer" onclick="simulateQRScan('member')">🪪 Scan Student Pass QR</span>
+            </label>
+            <input type="text" class="form-input" id="return-member-input" value="M10618 (John Doe)" placeholder="Enter Member ID e.g. M10618 or Name..." oninput="filterReturnBooksByMember(this.value)">
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Select Book Issued to Member or Scan QR</label>
+            <select class="form-select" id="return-book-select" onchange="onBookSelectChange(this, 'return-book-preview', 'return-book')">
+              <option value="The Pragmatic Programmer" selected>📖 The Pragmatic Programmer (Andrew Hunt) - Overdue (₹45)</option>
+              <option value="Dune">📖 Dune (Frank Herbert) - On Time (₹0)</option>
+              <option value="Sapiens">📖 Sapiens (Yuval Noah Harari) - On Time (₹0)</option>
+            </select>
+            <input type="hidden" id="return-book" value="The Pragmatic Programmer">
+          </div>
+
+          <!-- Auto-Filled Return Book Preview & Timeline Breakdown -->
+          <div id="return-book-preview" style="background:rgba(217,119,6,0.08);border:1px solid var(--amber);border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+              <div style="font-size:28px">📙</div>
+              <div style="flex:1">
+                <div style="font-size:15px;font-weight:700;color:var(--text)" id="return-preview-title">The Pragmatic Programmer</div>
+                <div style="font-size:12px;color:var(--text2)" id="return-preview-sub">Issued to: <strong style="color:var(--teal)">John Doe (#M10618)</strong></div>
+              </div>
+              <div id="return-status-badge">
+                <span class="badge badge-amber" style="font-size:12px;padding:5px 10px">⚠️ 9 Days Overdue</span>
+              </div>
+            </div>
+
+            <!-- Timeline & Days Kept Grid -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;background:var(--navy);padding:10px;border-radius:8px;margin-bottom:12px;border:1px solid var(--border)">
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">📅 Issue Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px" id="ret-issue-date">12 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">⏳ Free Due Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--teal);margin-top:2px" id="ret-due-date">19 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">📆 Return Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px" id="ret-today-date">28 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">⏱️ Days Kept</div>
+                <div style="font-size:12px;font-weight:700;color:var(--amber);margin-top:2px" id="ret-total-days">16 Days</div>
+              </div>
+            </div>
+
+            <!-- Fine Formula Breakdown -->
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(15,23,42,0.6);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
+              <div>
+                <div style="font-size:11px;color:var(--text3)">Fine Calculation Formula</div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:1px" id="ret-fine-formula">9 Overdue Days × ₹5.00/day</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:10px;color:var(--text3)">Total Fine Due</div>
+                <div style="font-size:22px;font-weight:800;color:var(--amber)" id="fine-preview">₹45.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Book Condition on Inspection</label>
+            <select class="form-select"><option>Good (No damage)</option><option>Fair (Normal wear)</option><option>Damaged (Page missing / tear)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:14px"><label class="form-label">Return Date</label><input class="form-input" type="date" id="return-date" value="2026-05-28"></div>
+
+          <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:700" onclick="processReturn()">
+            📥 Process 1-Click Return
+          </button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><span class="card-title">Recent Transactions</span></div>
+        <div class="table-wrap"><table>
+          <tr><th>Type</th><th>Member</th><th>Book</th><th>Date</th><th>Fine</th><th>Action</th></tr>
+          <tr>
+            <td><span class="badge badge-teal">Issue</span></td>
+            <td class="td-main">Jane Doe</td><td>Dune</td><td>Jun 15</td><td>—</td>
+            <td><button class="btn btn-sm btn-ghost" onclick="showQR('book','ISBN-978-0441013593','Dune')">QR</button></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">Return</span></td>
+            <td class="td-main">Bob Smith</td><td>Atomic Habits</td><td>Jun 14</td><td><span class="badge badge-green">₹0</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="showQR('book','ISBN-978-0735211292','Atomic Habits')">QR</button></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-amber">Reserve</span></td>
+            <td class="td-main">Alice M.</td><td>Project Hail Mary</td><td>Jun 13</td><td>—</td>
+            <td><button class="btn btn-sm btn-ghost" onclick="notify('Email sent to Alice','success')">Notify</button></td>
+          </tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Members -->
+    <div id="lt-members" style="display:none">
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <div class="search-bar" style="flex:1"><span class="search-icon">🔍</span><input type="text" placeholder="Search members..."></div>
+        <button class="btn btn-primary" onclick="openAddMember()">+ Add Member</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <tr><th>Member</th><th>ID</th><th>Type</th><th>Books Out</th><th>Fines</th><th>Status</th><th>Actions</th></tr>
+          <tr>
+            <td><div class="td-main">Jane Doe</div><div style="font-size:11px;color:var(--text3)">jane@email.com</div></td>
+            <td>M00142</td><td><span class="badge badge-teal">Premium</span></td><td>3/5</td>
+            <td style="color:var(--amber)">₹45</td><td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="notify('Reminder sent!','success')">Remind</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-main">Bob Smith</div><div style="font-size:11px;color:var(--text3)">bob@email.com</div></td>
+            <td>M00089</td><td><span class="badge badge-navy">Standard</span></td><td>1/3</td>
+            <td>₹0</td><td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="notify('Reminder sent!','success')">Remind</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-main">Alice Menon</div><div style="font-size:11px;color:var(--text3)">alice@email.com</div></td>
+            <td>M00201</td><td><span class="badge badge-teal">Premium</span></td><td>2/5</td>
+            <td>₹0</td><td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="notify('Reminder sent!','success')">Remind</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-main">Raj Patel</div><div style="font-size:11px;color:var(--text3)">raj@email.com</div></td>
+            <td>M00055</td><td><span class="badge badge-navy">Standard</span></td><td>0/3</td>
+            <td style="color:var(--red)">₹120</td><td><span class="badge badge-red">Blocked</span></td>
+            <td><button class="btn btn-sm btn-amber" onclick="showPayment(120,'Fine Collection')">Collect Fine</button></td>
+          </tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Fines -->
+    <div id="lt-fines" style="display:none">
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Total Outstanding</div><div class="stat-val" style="color:var(--amber)">₹685</div></div>
+        <div class="stat"><div class="stat-label">Collected This Month</div><div class="stat-val" style="color:var(--green)">₹1,240</div></div>
+        <div class="stat"><div class="stat-label">Overdue Books</div><div class="stat-val">8</div></div>
+        <div class="stat"><div class="stat-label">Members Blocked</div><div class="stat-val" style="color:var(--red)">2</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Fine Management</span>
+          <button class="btn btn-sm btn-secondary" onclick="notify('Bulk reminders sent to 8 members','success')">Send All Reminders</button>
+        </div>
+        <div class="table-wrap"><table>
+          <tr><th>Member</th><th>Book</th><th>Days Overdue</th><th>Fine</th><th>Grace Period</th><th>Actions</th></tr>
+          <tr>
+            <td class="td-main">Jane Doe</td><td>The Pragmatic Programmer</td>
+            <td><span class="badge badge-red">6 days</span></td>
+            <td style="color:var(--amber);font-weight:600">₹45</td>
+            <td><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:60%;background:var(--amber)"></div></div></td>
+            <td><button class="btn btn-sm btn-amber" onclick="showPayment(45,'Fine Collection - Jane Doe')">Collect</button></td>
+          </tr>
+          <tr>
+            <td class="td-main">Raj Patel</td><td>Introduction to Algorithms</td>
+            <td><span class="badge badge-red">24 days</span></td>
+            <td style="color:var(--red);font-weight:600">₹120</td>
+            <td><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:100%;background:var(--red)"></div></div></td>
+            <td><button class="btn btn-sm btn-amber" onclick="showPayment(120,'Auto-charge saved card')">Auto Charge</button></td>
+          </tr>
+          <tr>
+            <td class="td-main">Sarah K.</td><td>Sapiens</td>
+            <td><span class="badge badge-amber">3 days</span></td>
+            <td style="color:var(--amber);font-weight:600">₹15</td>
+            <td><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:30%"></div></div></td>
+            <td><button class="btn btn-sm btn-amber" onclick="showPayment(15,'Fine Collection - Sarah K.')">Collect</button></td>
+          </tr>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div id="lt-inventory" style="display:none">
+      <!-- Filter Bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;background:var(--navy2);padding:12px 16px;border-radius:8px;border:1px solid var(--border);flex-wrap:wrap;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px;font-weight:600;color:var(--text)">📍 Assigned Branch Stock:</span>
+          <span class="badge badge-teal" style="font-size:13px;padding:5px 12px" id="inv-current-branch-badge">Main Branch</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="inv-search" class="form-input" placeholder="Search book or ISBN..." style="width:200px;padding:6px 12px;font-size:13px" onkeyup="filterInventoryTable()">
+          <button class="btn btn-primary btn-sm" onclick="notify('Exporting Main Branch Inventory CSV...','info')">📥 Export Stock</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Total Stock Copies</div><div class="stat-val" id="inv-stat-total">1,204</div></div>
+        <div class="stat"><div class="stat-label">Available Copies</div><div class="stat-val" style="color:var(--green)" id="inv-stat-avail">982</div></div>
+        <div class="stat"><div class="stat-label">Borrowed Copies</div><div class="stat-val" style="color:var(--amber)" id="inv-stat-borrowed">222</div></div>
+        <div class="stat"><div class="stat-label">Low / Out of Stock</div><div class="stat-val" style="color:var(--red)" id="inv-stat-low">2 Titles</div></div>
+      </div>
+
+      <!-- Detailed Book Stock Table (Copies Available Per Book) -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <span class="card-title">📚 Book Copies Inventory (<span id="inv-branch-title" style="color:var(--teal)">Main Branch</span>)</span>
+          <button class="btn btn-sm btn-primary" onclick="showAddNewCopiesModal()" style="font-weight:700">+ Add New Book / Copies Manually</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Book Title & Author</th>
+                <th>ISBN</th>
+                <th>Shelf / Rack</th>
+                <th>Total Copies</th>
+                <th>Available</th>
+                <th>Borrowed</th>
+                <th>Stock Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inv-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Import -->
+    <!-- Bulk Import Manager (Physical Books) -->
+    <div id="lt-import" style="display:none">
+      <div class="card">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span class="card-title">📊 Bulk Books Excel/CSV Import Manager</span>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">Upload physical books inventory list to automatically sync with Library Database</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="downloadSampleCSV()">📥 Download Sample Excel/CSV Template</button>
+        </div>
+
+        <!-- Physical Books CSV Upload Container -->
+        <div id="csv-import-box" style="margin-top:12px">
+          <input type="file" id="csv-file-input" accept=".csv,.xlsx" style="display:none" onchange="handleCSVSelect(event)">
+          <div style="border:2px dashed var(--teal);background:rgba(13,148,136,0.05);border-radius:8px;padding:32px;text-align:center;margin-bottom:16px;cursor:pointer" onclick="document.getElementById('csv-file-input').click()">
+            <div style="font-size:36px;margin-bottom:8px">📊</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)" id="csv-filename-label">Drop Physical Books Excel/CSV Sheet here or click to browse</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:4px">Expected Columns: Title, Author, Genre, ISBN, Copies Count, Rack Location</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Auto-fetch Metadata via ISBN</label>
+            <select class="form-select"><option>Yes — Open Library API</option><option>No</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Branch</label>
+            <select class="form-select" id="import-target-branch"><option>Main Campus Central Library</option><option>Science & Engineering Library</option><option>Law & Management Library</option></select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-primary" style="padding:11px 20px;font-weight:700" onclick="uploadCSV()">📁 Import Books to Database</button>
+          <button class="btn btn-secondary" style="padding:11px 20px" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+        </div>
+        
+        <div id="import-progress" style="margin-top:16px;display:none">
+          <div style="font-size:13px;margin-bottom:6px" id="import-count-label">Importing records...</div>
+          <div class="prog-bar"><div class="prog-fill" id="import-bar" style="width:0%;transition:width 0.5s"></div></div>
+          <div id="import-status" style="font-size:11px;color:var(--text3);margin-top:4px">Processing...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal Overlay ──────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modal-content"></div>
+  </div>
+  <div class="notif" id="notif-container"></div>
+
+</div><!-- .app -->
+
+<script src="js/data.js"></script>
+<script src="js/books.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/app.js"></script>
+<script>
+  function libTab(el, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['lt-issue','lt-members','lt-fines','lt-inventory','lt-import'].forEach(i => {
+      const el2 = document.getElementById(i);
+      if (el2) el2.style.display = i === id ? 'block' : 'none';
+    });
+    if (id === 'lt-inventory') {
+      filterInventoryBranch('Main Branch');
+    }
+  }
+
+  const INVENTORY_DATA = {
+    'Main Branch': {
+      total: '1,204', avail: '982', borrowed: '222', low: '2 Titles',
+      books: [
+        { title: 'Shrimad Bhagavad Gita', author: 'Maharishi Ved Vyasa', isbn: '978-8120800099', rack: 'Rack A-1', total: 10, avail: 8, borrowed: 2, status: 'In Stock', badge: 'badge-green' },
+        { title: 'Wings of Fire', author: 'A.P.J. Abdul Kalam', isbn: '978-8173711466', rack: 'Rack B-4', total: 5, avail: 3, borrowed: 2, status: 'In Stock', badge: 'badge-green' },
+        { title: 'Atomic Habits', author: 'James Clear', isbn: '978-0735211292', rack: 'Rack C-2', total: 4, avail: 0, borrowed: 4, status: 'Out of Stock', badge: 'badge-red' },
+        { title: 'Clean Code', author: 'Robert C. Martin', isbn: '978-0132350884', rack: 'Rack D-1', total: 3, avail: 1, borrowed: 2, status: 'Low Stock', badge: 'badge-amber' },
+        { title: 'The Pragmatic Programmer', author: 'Andrew Hunt', isbn: '978-0135957059', rack: 'Rack D-3', total: 5, avail: 4, borrowed: 1, status: 'In Stock', badge: 'badge-green' },
+        { title: 'Dune', author: 'Frank Herbert', isbn: '978-0441013593', rack: 'Rack E-5', total: 6, avail: 5, borrowed: 1, status: 'In Stock', badge: 'badge-green' },
+        { title: 'Sapiens', author: 'Yuval Noah Harari', isbn: '978-0099590088', rack: 'Rack F-2', total: 4, avail: 3, borrowed: 1, status: 'In Stock', badge: 'badge-green' }
+      ]
+    }
+  };
+
+  function filterInventoryBranch(branch = 'Main Branch') {
+    const data = INVENTORY_DATA[branch] || INVENTORY_DATA['Main Branch'];
+    document.getElementById('inv-branch-title').textContent = branch;
+    document.getElementById('inv-stat-total').textContent = data.total;
+    document.getElementById('inv-stat-avail').textContent = data.avail;
+    document.getElementById('inv-stat-borrowed').textContent = data.borrowed;
+    document.getElementById('inv-stat-low').textContent = data.low;
+    renderInventoryTable(data.books);
+  }
+
+  function renderInventoryTable(books) {
+    const tbody = document.getElementById('inv-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = books.map(b => `
+      <tr>
+        <td>
+          <div class="td-main">${b.title}</div>
+          <div style="font-size:11px;color:var(--text3)">${b.author}</div>
+        </td>
+        <td style="font-family:monospace;font-size:12px">${b.isbn}</td>
+        <td><span class="badge badge-navy">${b.rack}</span></td>
+        <td style="font-weight:600">${b.total} copies</td>
+        <td style="color:var(--green);font-weight:600">${b.avail} available</td>
+        <td style="color:var(--amber)">${b.borrowed} borrowed</td>
+        <td><span class="badge ${b.badge}">${b.status}</span></td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm btn-ghost" onclick="showAddCopyModal('${b.title.replace(/'/g, "\\'")}')">+ Copy</button>
+            <button class="btn btn-sm btn-secondary" onclick="showTransferRequestModal('${b.title.replace(/'/g, "\\'")}')">📩 Req. Transfer</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function showAddCopyModal(bookTitle) {
+    const data = INVENTORY_DATA['Main Branch'];
+    const book = data ? data.books.find(b => b.title === bookTitle) : null;
+
+    showModal('➕ Add Copies to Stock', `
+      <div style="font-size:14px;margin-bottom:14px">
+        Add new physical copies of <strong style="color:var(--teal)">"${bookTitle}"</strong> to <strong>Main Branch</strong> stock.
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Number of copies to add:</label>
+        <input type="number" id="add-copies-input" class="form-input" value="1" min="1" max="50">
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Shelf / Rack Placement:</label>
+        <input type="text" id="add-rack-input" class="form-input" value="${book ? book.rack : 'Rack A-1'}">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmAddCopies('${bookTitle.replace(/'/g, "\\'")}', 'Main Branch')">Add Stock</button>
+      </div>
+    `);
+  }
+
+  function confirmAddCopies(bookTitle, branch) {
+    const qty = parseInt(document.getElementById('add-copies-input').value) || 1;
+    const rack = document.getElementById('add-rack-input').value || 'Rack A-1';
+    const data = INVENTORY_DATA[branch] || INVENTORY_DATA['Main Branch'];
+    if (data) {
+      let book = data.books.find(b => b.title === bookTitle);
+      if (!book) {
+        book = { title: bookTitle, author: 'Author', isbn: '978-0000000000', rack: rack, total: 0, avail: 0, borrowed: 0, status: 'In Stock', badge: 'badge-green' };
+        data.books.push(book);
+      }
+      book.total += qty;
+      book.avail += qty;
+      book.rack = rack;
+      if (book.avail > 2) { book.status = 'In Stock'; book.badge = 'badge-green'; }
+      else if (book.avail > 0) { book.status = 'Low Stock'; book.badge = 'badge-amber'; }
+      
+      closeModal();
+      filterInventoryBranch('Main Branch');
+      notify(`Successfully added ${qty} copies of "${bookTitle}" to Main Branch!`, 'success');
+    }
+  }
+
+  function showTransferRequestModal(bookTitle) {
+    showModal('📩 Submit Inter-Branch Transfer Request', `
+      <div style="font-size:14px;margin-bottom:14px">
+        Submit an official stock transfer request for <strong style="color:var(--teal)">"${bookTitle}"</strong> to another branch.
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Request Copies From Branch:</label>
+        <select id="transfer-from-branch" class="form-select">
+          <option value="North Branch">North Branch</option>
+          <option value="East Wing">East Wing</option>
+          <option value="Central Warehouse">Central Warehouse</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Number of Copies Requested:</label>
+        <input type="number" id="transfer-req-qty" class="form-input" value="2" min="1" max="20">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmTransferRequest('${bookTitle.replace(/'/g, "\\'")}')">Send Request</button>
+      </div>
+    `);
+  }
+
+  function confirmTransferRequest(bookTitle) {
+    const target = document.getElementById('transfer-from-branch').value;
+    const qty = parseInt(document.getElementById('transfer-req-qty').value) || 1;
+    closeModal();
+    notify(`Stock Transfer Request for ${qty} copies of "${bookTitle}" submitted to ${target}!`, 'success');
+  }
+
+  function showAddNewCopiesModal() {
+    showModal('📚 Add Physical Book to Inventory (Manual Entry)', `
+      <div style="font-size:12px;color:var(--text3);margin-bottom:14px">
+        Enter details to add a new physical book title or multiple copies into library stock.
+      </div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">Book Title *</label>
+        <input class="form-input" id="new-inv-title" placeholder="e.g. Concepts of Physics Vol 1">
+      </div>
+      <div class="form-row" style="display:flex;gap:10px;margin-bottom:10px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Author Name *</label>
+          <input class="form-input" id="new-inv-author" placeholder="e.g. Dr. H.C. Verma">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Genre / Subject</label>
+          <input class="form-input" id="new-inv-genre" placeholder="e.g. Physics / Science">
+        </div>
+      </div>
+      <div class="form-row" style="display:flex;gap:10px;margin-bottom:10px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">ISBN / Barcode Number *</label>
+          <input class="form-input" id="new-inv-isbn" placeholder="e.g. 978-8177091877 (Shoot Barcode Gun)">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Shelf / Rack Placement</label>
+          <input class="form-input" id="new-inv-rack" placeholder="Rack A-3">
+        </div>
+      </div>
+      <div class="form-row" style="display:flex;gap:10px;margin-bottom:14px">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Copies Received (e.g. 1 to 20)</label>
+          <input type="number" class="form-input" id="new-inv-copies" value="10" min="1" max="100">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">Target Branch</label>
+          <select class="form-select" id="new-inv-branch">
+            <option>Main Branch</option>
+            <option>North Branch</option>
+            <option>East Wing</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveNewBookInventory()">📁 Save to Inventory Database</button>
+      </div>
+    `);
+  }
+
+  function saveNewBookInventory() {
+    const title = document.getElementById('new-inv-title').value.trim();
+    const author = document.getElementById('new-inv-author').value.trim() || 'Unknown Author';
+    const genre = document.getElementById('new-inv-genre').value.trim() || 'General';
+    const isbn = document.getElementById('new-inv-isbn').value.trim() || '978-0000000000';
+    const rack = document.getElementById('new-inv-rack').value.trim() || 'Rack A-1';
+    const branch = document.getElementById('new-inv-branch').value;
+    const copies = parseInt(document.getElementById('new-inv-copies').value) || 1;
+
+    if (!title) { notify('Please enter book title', 'error'); return; }
+
+    const data = INVENTORY_DATA['Main Branch'];
+    if (data) {
+      let book = data.books.find(b => b.title.toLowerCase() === title.toLowerCase());
+      if (book) {
+        book.total += copies;
+        book.avail += copies;
+        book.rack = rack;
+      } else {
+        data.books.unshift({
+          title: title,
+          author: author,
+          genre: genre,
+          isbn: isbn,
+          rack: rack,
+          total: copies,
+          avail: copies,
+          borrowed: 0,
+          status: 'In Stock',
+          badge: 'badge-green'
+        });
+      }
+    }
+
+    closeModal();
+    filterInventoryBranch('Main Branch');
+    notify(`🎉 "${title}" (${copies} copies) added to ${branch} inventory!`, 'success');
+  }
+
+  function filterInventoryTable() {
+    const query = document.getElementById('inv-search').value.toLowerCase();
+    const data = INVENTORY_DATA['Main Branch'];
+    const filtered = data.books.filter(b => b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query) || b.isbn.toLowerCase().includes(query));
+    renderInventoryTable(filtered);
+  }
+
+  function switchImportType(type) {
+    const csvBox = document.getElementById('csv-import-box');
+    const ebookBox = document.getElementById('ebook-import-box');
+    if (type === 'csv') {
+      csvBox.style.display = 'block';
+      ebookBox.style.display = 'none';
+    } else {
+      csvBox.style.display = 'none';
+      ebookBox.style.display = 'block';
+    }
+  }
+
+  function handlePDFSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+      document.getElementById('pdf-filename-label').textContent = `Selected E-Book Document: ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
+    }
+  }
+
+  function simulateImport() {
+    const p   = document.getElementById('import-progress');
+    const bar = document.getElementById('import-bar');
+    const st  = document.getElementById('import-status');
+    p.style.display = 'block';
+    setTimeout(() => { bar.style.width = '40%'; st.textContent = 'Validating records...'; }, 200);
+    setTimeout(() => { bar.style.width = '70%'; st.textContent = 'Fetching ISBN metadata (31/47)...'; }, 1200);
+    setTimeout(() => {
+      bar.style.width = '100%';
+      st.textContent  = 'Done! Records imported successfully.';
+      notify('Books imported successfully to database!', 'success');
+    }, 2400);
+  }
+
+  function showBranchModal() {
+    showModal('📍 Select Branch', `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${['Main Branch','North Branch','East Wing'].map(b => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--navy);border-radius:8px;cursor:pointer;border:1px solid var(--border)" onclick="switchBranch('${b}')">
+            <div><div style="font-size:14px;font-weight:500">${b}</div><div style="font-size:11px;color:var(--text3)">Open · Books available</div></div>
+            <span>→</span>
+          </div>
+        `).join('')}
+      </div>
+    `);
+  }
+
+  function switchBranch(b) {
+    document.getElementById('current-branch').textContent = b;
+    closeModal();
+    notify(`Switched to ${b}`, 'info');
+  }
+
+  /* ── Auto-Fill Scanned Book Details & Timeline Breakdown (No Manual Typing Needed!) ── */
+  const BOOK_DB = {
+    'Dune': { title: 'Dune', author: 'Frank Herbert', isbn: 'ISBN-978-0441013593', fine: '₹0.00', status: 'On Time', issueDate: '21 Jun 2026', dueDate: '28 Jun 2026', todayDate: '28 Jun 2026', daysKept: '7 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' },
+    'Clean Code': { title: 'Clean Code', author: 'Robert C. Martin', isbn: 'ISBN-978-0132350884', fine: '₹0.00', status: 'On Time', issueDate: '20 Jun 2026', dueDate: '27 Jun 2026', todayDate: '27 Jun 2026', daysKept: '7 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' },
+    'Atomic Habits': { title: 'Atomic Habits', author: 'James Clear', isbn: 'ISBN-978-0735211292', fine: '₹0.00', status: 'On Time', issueDate: '22 Jun 2026', dueDate: '29 Jun 2026', todayDate: '28 Jun 2026', daysKept: '6 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' },
+    'Shrimad Bhagavad Gita': { title: 'Shrimad Bhagavad Gita', author: 'Gita Press', isbn: 'ISBN-978-8120800010', fine: '₹0.00', status: 'On Time', issueDate: '15 Jun 2026', dueDate: '22 Jun 2026', todayDate: '22 Jun 2026', daysKept: '7 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' },
+    'The Pragmatic Programmer': { title: 'The Pragmatic Programmer', author: 'Andrew Hunt', isbn: 'ISBN-978-0201616224', fine: '₹45.00', status: 'Overdue (9 Days)', issueDate: '12 May 2026', dueDate: '19 May 2026', todayDate: '28 May 2026', daysKept: '16 Days', overdueDays: 9, formula: '9 Overdue Days × ₹5.00/day' },
+    'Sapiens': { title: 'Sapiens', author: 'Yuval Noah Harari', isbn: 'ISBN-978-0062316097', fine: '₹0.00', status: 'On Time', issueDate: '22 Jun 2026', dueDate: '29 Jun 2026', todayDate: '28 Jun 2026', daysKept: '6 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' }
+  };
+
+  function onBookSelectChange(selectEl, previewId, hiddenInputId) {
+    const val = selectEl.value;
+    const hiddenInp = document.getElementById(hiddenInputId);
+    if (hiddenInp) hiddenInp.value = val;
+
+    const info = BOOK_DB[val] || { title: val, author: 'Library Author', isbn: 'ISBN-Auto', fine: '₹0.00', issueDate: '12 Jun 2026', dueDate: '19 Jun 2026', todayDate: '19 Jun 2026', daysKept: '7 Days', overdueDays: 0, formula: '0 Overdue Days × ₹5.00/day' };
+
+    if (previewId === 'issue-book-preview') {
+      document.getElementById('issue-preview-title').textContent = info.title;
+      document.getElementById('issue-preview-sub').textContent = `Author: ${info.author} · ${info.isbn}`;
+    } else if (previewId === 'return-book-preview') {
+      document.getElementById('return-preview-title').textContent = info.title;
+      document.getElementById('return-preview-sub').innerHTML = `Issued to: <strong style="color:var(--teal)">John Doe (#M10618)</strong>`;
+      
+      const badgeEl = document.getElementById('return-status-badge');
+      if (badgeEl) {
+        badgeEl.innerHTML = info.overdueDays > 0 
+          ? `<span class="badge badge-amber" style="font-size:12px;padding:5px 10px">⚠️ ${info.overdueDays} Days Overdue</span>`
+          : `<span class="badge badge-green" style="font-size:12px;padding:5px 10px">✓ On Time</span>`;
+      }
+
+      const retIssue = document.getElementById('ret-issue-date');
+      if (retIssue) retIssue.textContent = info.issueDate;
+      const retDue = document.getElementById('ret-due-date');
+      if (retDue) retDue.textContent = info.dueDate;
+      const retToday = document.getElementById('ret-today-date');
+      if (retToday) retToday.textContent = info.todayDate;
+      const retDays = document.getElementById('ret-total-days');
+      if (retDays) {
+        retDays.textContent = info.daysKept;
+        retDays.style.color = info.overdueDays > 0 ? 'var(--amber)' : 'var(--green)';
+      }
+
+      const retFormula = document.getElementById('ret-fine-formula');
+      if (retFormula) retFormula.textContent = info.formula;
+      
+      const fp = document.getElementById('fine-preview');
+      if (fp) {
+        fp.textContent = info.fine;
+        fp.style.color = info.fine !== '₹0.00' ? 'var(--amber)' : 'var(--green)';
+      }
+    }
+  }
+
+  const MEMBER_LOANS_DB = {
+    'M10618': {
+      name: 'John Doe (#M10618)',
+      books: [
+        { title: 'The Pragmatic Programmer', text: '📖 The Pragmatic Programmer (Andrew Hunt) - Overdue (₹45)' },
+        { title: 'Dune', text: '📖 Dune (Frank Herbert) - On Time (₹0)' }
+      ]
+    },
+    'M00142': {
+      name: 'Jane Doe (#M00142)',
+      books: [
+        { title: 'Sapiens', text: '📖 Sapiens (Yuval Noah Harari) - On Time (₹0)' }
+      ]
+    },
+    'M00089': {
+      name: 'Bob Smith (#M00089)',
+      books: [
+        { title: 'Atomic Habits', text: '📖 Atomic Habits (James Clear) - On Time (₹0)' }
+      ]
+    }
+  };
+
+  function filterReturnBooksByMember(query) {
+    const q = (query || '').toUpperCase().trim();
+    let memberData = null;
+    for (let key in MEMBER_LOANS_DB) {
+      if (key.includes(q) || MEMBER_LOANS_DB[key].name.toUpperCase().includes(q)) {
+        memberData = MEMBER_LOANS_DB[key];
+        break;
+      }
+    }
+    if (!memberData) memberData = MEMBER_LOANS_DB['M10618'];
+
+    const sel = document.getElementById('return-book-select');
+    if (sel && memberData.books) {
+      sel.innerHTML = memberData.books.map(b => `<option value="${b.title}">${b.text}</option>`).join('');
+      onBookSelectChange(sel, 'return-book-preview', 'return-book');
+    }
+  }
+
+  function simulateQRScan(mode) {
+    const titleText = mode === 'member' ? '🪪 Barcode / QR Scanner (Student Pass)' : '📷 Barcode / QR Scanner (Book ISBN)';
+    const btnText = mode === 'member' ? '⚡ Auto-Detect Member (#M10618)' : '⚡ Auto-Detect Book Barcode';
+
+    showModal(titleText, `
+      <div style="text-align:center;padding:16px">
+        <div id="scanner-view-box" style="width:240px;height:160px;margin:0 auto 14px;background:#000;border:2px solid var(--teal);border-radius:12px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-size:44px;opacity:0.85">${mode === 'member' ? '🪪' : '🔲'}</div>
+          <div style="font-size:11px;color:var(--teal);margin-top:6px;font-weight:600">🔌 USB Laser Scanner Gun Ready</div>
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#10b981;box-shadow:0 0 15px #10b981;animation:scanLine 1.5s infinite ease-in-out"></div>
+        </div>
+        <style>
+          @keyframes scanLine { 0% { top: 0%; } 50% { top: 90%; } 100% { top: 0%; } }
+        </style>
+
+        <div style="background:rgba(13,148,136,0.1);border:1px solid var(--teal);border-radius:8px;padding:10px;font-size:12px;margin-bottom:14px;text-align:left">
+          <strong style="color:var(--teal)">🔌 USB Barcode Laser Gun Mode:</strong><br>
+          Point handheld scanner gun at book barcode or student pass. Auto-detects in 0.1s!
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;padding:11px;font-weight:700" onclick="completeQRScan('${mode}')">${btnText}</button>
+      </div>
+    `);
+  }
+
+  function stopWebcamStream() {
+    // Camera disabled
+  }
+
+  function completeQRScan(mode) {
+    stopWebcamStream();
+    closeModal();
+    if (mode === 'member') {
+      const inp = document.getElementById('return-member-input');
+      if (inp) {
+        inp.value = 'M10618 (John Doe)';
+        filterReturnBooksByMember('M10618');
+      }
+      notify('✅ Student Pass Scanned! John Doe (#M10618) active loans loaded.', 'success');
+    } else if (mode === 'issue') {
+      const select = document.getElementById('issue-book-select');
+      select.value = 'Clean Code';
+      onBookSelectChange(select, 'issue-book-preview', 'issue-book');
+      notify('✅ QR Code Scanned! "Clean Code" auto-filled.', 'success');
+    } else {
+      const select = document.getElementById('return-book-select');
+      select.value = 'The Pragmatic Programmer';
+      onBookSelectChange(select, 'return-book-preview', 'return-book');
+      notify('✅ QR Code Scanned! "The Pragmatic Programmer" auto-filled.', 'success');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const rb = document.getElementById('return-book');
+    if (rb) rb.addEventListener('input', () => {
+      const overdue = rb.value.toLowerCase().includes('pragmatic') || rb.value.toLowerCase().includes('algo');
+      document.getElementById('fine-preview').textContent = overdue ? '₹45.00' : '₹0.00';
+      document.getElementById('fine-preview').style.color = overdue ? 'var(--amber)' : 'var(--green)';
+    });
+  });
+</script>
+</body>
+</html>

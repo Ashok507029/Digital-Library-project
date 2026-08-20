@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — Alexandria Digital Library</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#0d9488"/>
+        <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="10" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="13" x2="18" y2="13" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="16" x2="15" y2="16" stroke="white" stroke-width="1.2"/>
+      </svg>
+      Alexandria
+    </div>
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">Catalog</a>
+      <a class="nav-btn active" href="member.html">My Account</a>
+      <a class="nav-btn" href="login.html" onclick="localStorage.removeItem('user_role')" style="color:var(--red);font-weight:600">🚪 Logout</a>
+    </nav>
+    <div class="header-right">
+      <div class="branch-pill" onclick="showBranchModal()">
+        📍 <span id="current-branch">Main Branch</span>
+      </div>
+      <span class="role-badge">Member</span>
+      <div class="avatar" id="user-avatar">?</div>
+    </div>
+  </header>
+
+  <!-- ── Member Page ─────────────────────────────────────────────── -->
+  <div class="page active" id="page-member">
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <div class="avatar" id="profile-avatar" style="width:48px;height:48px;font-size:16px">?</div>
+      <div>
+        <div style="font-size:17px;font-weight:600" id="profile-name">Loading...</div>
+        <div style="font-size:12px;color:var(--text3)" id="profile-sub">Member</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-start">
+        <button class="btn btn-secondary btn-sm" id="qr-btn" onclick="showQR('member','','Loading...')">QR Card</button>
+        <a class="btn btn-primary btn-sm" href="index.html">Browse Books</a>
+      </div>
+    </div>
+
+    <div id="member-fine-notice"></div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="memberTab(this,'mt-current')">Current Loans</div>
+      <div class="tab"        onclick="memberTab(this,'mt-history')">History</div>
+    </div>
+    <!-- Current Loans - rendered dynamically by JS -->
+    <div id="mt-current">
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Books Borrowed</div><div class="stat-val" id="stat-borrowed">0</div><div class="stat-sub">of 5 allowed</div></div>
+        <div class="stat"><div class="stat-label">Overdue Fines</div><div class="stat-val" id="stat-fine" style="color:var(--amber)">₹0</div><div class="stat-sub" id="stat-fine-sub">No dues</div></div>
+        <div class="stat"><div class="stat-label">Books Read</div><div class="stat-val" id="stat-read">0</div><div class="stat-sub">lifetime total</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Current Loans</span></div>
+        <div class="table-wrap" id="loans-table-wrap"></div>
+      </div>
+    </div>
+
+    <!-- History - rendered dynamically by JS -->
+    <div id="mt-history" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Borrowing History</span></div>
+        <div class="table-wrap" id="history-table-wrap"></div>
+      </div>
+    </div>  <!-- ── Modal Overlay ──────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modal-content"></div>
+  </div>
+  <div class="notif" id="notif-container"></div>
+
+</div><!-- .app -->
+
+<script src="js/data.js"></script>
+<script src="js/books.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Page-specific init
+  function memberTab(el, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['mt-current','mt-history','mt-ebooks','mt-plans'].forEach(i => {
+      const el2 = document.getElementById(i);
+      if (el2) el2.style.display = i === id ? 'block' : 'none';
+    });
+  }
+
+  function showBranchModal() {
+    showModal('📍 Select Branch', `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${['Main Branch','North Branch','East Wing'].map(b => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--navy);border-radius:8px;cursor:pointer;border:1px solid var(--border)" onclick="switchBranch('${b}')">
+            <div><div style="font-size:14px;font-weight:500">${b}</div><div style="font-size:11px;color:var(--text3)">Open · Books available</div></div>
+            <span>→</span>
+          </div>
+        `).join('')}
+      </div>
+    `);
+  }
+
+  function switchBranch(b) {
+    document.getElementById('current-branch').textContent = b;
+    closeModal();
+    notify(`Switched to ${b}`, 'info');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    /* ── Load logged-in user profile ──────────────────────── */
+    let name  = localStorage.getItem('user_name')  || '';
+    let email = localStorage.getItem('user_email') || '';
+
+    // Auto-bypass for Member testing: Default to John Doe if no user logged in
+    if (!name && !email) {
+      name = 'John Doe';
+      email = 'john.doe@email.com';
+      localStorage.setItem('user_role', 'member');
+      localStorage.setItem('user_name', name);
+      localStorage.setItem('user_email', email);
+    }
+
+    const isDemo = email.toLowerCase() === 'john.doe@email.com';
+
+    // Initials
+    const parts    = name.trim().split(' ').filter(Boolean);
+    const initials = parts.map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+
+    // Header avatar + profile section
+    ['user-avatar','profile-avatar'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = initials;
+    });
+    const profileName = document.getElementById('profile-name');
+    const profileSub  = document.getElementById('profile-sub');
+    const qrBtn       = document.getElementById('qr-btn');
+    if (profileName) profileName.textContent = name;
+
+    const memberId = email
+      ? 'M' + (email.charCodeAt(0) * 100 + email.length).toString().padStart(5, '0')
+      : 'M00001';
+    const joinDate = new Date().toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    if (profileSub) profileSub.textContent = `Member since ${joinDate} · ID #${memberId} · Free Member`;
+    if (qrBtn) qrBtn.setAttribute('onclick', `showQR('member','${memberId}','${name}')`);
+
+    /* ── Demo data (only for John Doe demo account) ─────── */
+    const DEMO_LOANS = [
+      { title:'The Pragmatic Programmer', author:'Andrew Hunt', issued:'Jun 1, 2026', due:'Jun 22, 2026', overdue:true,  fine:45 },
+      { title:'Dune',                     author:'Frank Herbert',      issued:'Jun 15, 2026', due:'Jul 6, 2026',  overdue:false, fine:0  },
+      { title:'Sapiens',                  author:'Yuval Noah Harari',  issued:'Jun 18, 2026', due:'Jul 9, 2026',  overdue:false, fine:0  },
+    ];
+    const DEMO_HISTORY = [
+      { title:'Atomic Habits',       author:'James Clear',       borrowed:'Mar 1',      returned:'Mar 19',    fine:0  },
+      { title:'The Alchemist',       author:'Paulo Coelho',      borrowed:'Feb 5',      returned:'Feb 22',    fine:0  },
+      { title:'1984',                author:'George Orwell',     borrowed:'Jan 10',     returned:'Feb 2',     fine:15 },
+      { title:'Clean Code',          author:'Robert C. Martin',  borrowed:'Dec 1, 2025',returned:'Dec 20, 2025',fine:0},
+      { title:'Thinking, Fast & Slow',author:'Daniel Kahneman', borrowed:'Nov 5, 2025',returned:'Nov 28, 2025',fine:20},
+    ];
+
+    const loans   = isDemo ? DEMO_LOANS   : [];
+    const history = isDemo ? DEMO_HISTORY : [];
+    const totalFine    = loans.filter(l => l.overdue).reduce((s,l) => s+l.fine, 0);
+    const overdueCount = loans.filter(l => l.overdue).length;
+
+    /* ── Render stats ── */
+    document.getElementById('stat-borrowed').textContent = loans.length;
+    document.getElementById('stat-fine').textContent     = '₹' + totalFine;
+    document.getElementById('stat-fine-sub').textContent = overdueCount > 0 ? `${overdueCount} overdue book` : 'No dues ✓';
+    document.getElementById('stat-read').textContent     = isDemo ? 47 : 0;
+
+    /* ── Fine notice ── */
+    const notice = document.getElementById('member-fine-notice');
+    if (notice) {
+      notice.innerHTML = totalFine > 0 ? `
+        <div class="fine-indicator">
+          <span style="font-size:18px">⚠</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--red)">Overdue Fine: ₹${totalFine}</div>
+            <div style="font-size:11px;color:#dc2626">"${loans.find(l=>l.overdue)?.title}" is overdue. Please return soon.</div>
+          </div>
+          <button class="btn btn-sm btn-danger" style="margin-left:auto" onclick="showPayment(${totalFine},'Overdue Fine')">Pay Now</button>
+        </div>` : '';
+    }
+
+    /* ── Render loans table ── */
+    const loansWrap = document.getElementById('loans-table-wrap');
+    if (loansWrap) {
+      if (loans.length === 0) {
+        loansWrap.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:var(--text3)">
+            <div style="font-size:36px;margin-bottom:12px">📚</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">No Active Loans</div>
+            <div style="font-size:13px">You haven't borrowed any books yet.</div>
+            <a href="index.html" class="btn btn-primary btn-sm" style="margin-top:14px;display:inline-block">Browse Catalog →</a>
+          </div>`;
+      } else {
+        loansWrap.innerHTML = `<table>
+          <tr><th>Book</th><th>Issued</th><th>Due Date</th><th>Status</th><th>Actions</th></tr>
+          ${loans.map(l => `<tr>
+            <td><div class="td-main">${l.title}</div><div style="font-size:11px;color:var(--text3)">${l.author}</div></td>
+            <td>${l.issued}</td><td>${l.due}</td>
+            <td>${l.overdue ? '<span class="badge badge-red">⚠ Overdue</span>' : '<span class="badge badge-green">✓ On Time</span>'}</td>
+            <td><button class="btn btn-sm btn-secondary" onclick="showReturnModal('${l.title}',${l.fine})">Return</button></td>
+          </tr>`).join('')}
+        </table>`;
+      }
+    }
+
+    /* ── Render history table ── */
+    const histWrap = document.getElementById('history-table-wrap');
+    if (histWrap) {
+      if (history.length === 0) {
+        histWrap.innerHTML = `
+          <div style="text-align:center;padding:40px 20px;color:var(--text3)">
+            <div style="font-size:36px;margin-bottom:12px">🕐</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px">No Borrowing History</div>
+            <div style="font-size:13px">Books you borrow and return will appear here.</div>
+          </div>`;
+      } else {
+        histWrap.innerHTML = `<table>
+          <tr><th>Book</th><th>Author</th><th>Borrowed</th><th>Returned</th><th>Fine Paid</th></tr>
+          ${history.map(h => `<tr>
+            <td class="td-main">${h.title}</td><td>${h.author}</td>
+            <td>${h.borrowed}</td><td>${h.returned}</td>
+            <td>${h.fine > 0 ? `<span class="badge badge-amber">₹${h.fine}</span>` : '<span class="badge badge-green">None</span>'}</td>
+          </tr>`).join('')}
+        </table>`;
+      }
+    }
+  });
+</script>
+</body>
+</html>
