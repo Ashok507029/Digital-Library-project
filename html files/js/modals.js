@@ -35,7 +35,7 @@ function showBookDetail(id) {
   if (!isLoggedIn) {
     // ── GUEST / NOT LOGGED IN ──
     actionButtons = `
-      <button class="btn btn-primary" onclick="window.location.href='login.html'">🔐 Login to Reserve / Borrow</button>
+      <button class="btn btn-primary" onclick="closeModal(); showPage('login')">🔐 Login to Reserve / Borrow</button>
     `;
   } else if (userRole === 'librarian' || userRole === 'admin') {
     // ── LIBRARIAN / ADMIN ──
@@ -107,7 +107,7 @@ async function reserveBook(bookId, title) {
   const userRole = localStorage.getItem('user_role');
   if (!userRole) {
     notify('Please sign in to reserve books', 'error');
-    window.location.href = 'login.html';
+    showPage('login');
     return;
   }
   try {
@@ -126,7 +126,7 @@ async function reserveBook(bookId, title) {
 // ── Staff Issue Book (Librarian Action) ──
 function issueByLibrarian(bookId, title) {
   closeModal();
-  window.location.href = 'librarian.html';
+  showPage('librarian');
 }
 
 // ── QR Code ────────────────────────────────────────────────────────

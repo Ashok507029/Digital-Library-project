@@ -3,28 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alexandria Digital Library — Catalog</title>
+  <title>Alexandria Digital Library — Integrated Management Suite</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Make nav-btn work as links */
-    a.nav-btn {
-      text-decoration: none;
+    /* SPA Navbar button styling */
+    .nav button.nav-btn {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
     }
-    a.avatar {
-      text-decoration: none;
-      color: inherit;
+    .nav button.nav-btn:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+    .nav button.nav-btn.active {
+      background: rgba(13,148,136,0.15);
+      color: var(--teal);
+      font-weight: 600;
+      border: 1px solid rgba(13,148,136,0.3);
+    }
+    /* Logo button */
+    .logo {
+      cursor: pointer;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <!-- ── Unified Header ─────────────────────────────────────────────── -->
   <header class="header">
-    <div class="logo">
+    <div class="logo" onclick="showPage('catalog')">
       <svg viewBox="0 0 28 28" fill="none">
         <rect width="28" height="28" rx="6" fill="#0d9488"/>
         <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
@@ -34,31 +54,36 @@
       </svg>
       Alexandria
     </div>
+
+    <!-- Unified Single Page Navigation -->
     <nav class="nav" id="main-nav">
-      <a class="nav-btn active" href="index.html">Catalog</a>
-      <a class="nav-btn" href="member.html">My Account</a>
-      <a class="nav-btn" href="librarian.html">Librarian</a>
-      <a class="nav-btn" href="admin.html">Admin</a>
-      <a class="nav-btn" href="member.html" onclick="localStorage.setItem('user_role','member');localStorage.setItem('user_email','john.doe@email.com');localStorage.setItem('user_name','John Doe');" style="color:#10b981;font-weight:600">⚡ Member Bypass</a>
-      <a class="nav-btn" href="login.html" style="color:var(--teal);font-weight:600">🔐 Login</a>
+      <button class="nav-btn active" data-page="catalog" onclick="showPage('catalog')">📖 Catalog</button>
+      <button class="nav-btn" data-page="member" onclick="showPage('member')">👤 My Account</button>
+      <button class="nav-btn" data-page="librarian" onclick="showPage('librarian')">📚 Librarian Desk</button>
+      <button class="nav-btn" data-page="admin" onclick="showPage('admin')">⚙️ Admin Panel</button>
+      <button class="nav-btn" data-page="login" onclick="showPage('login')" style="color:var(--teal);font-weight:600">🔐 Login</button>
     </nav>
+
     <div class="header-right">
       <div class="branch-pill" onclick="showBranchModal()">
         📍 <span id="current-branch">Main Branch</span>
       </div>
       <span class="role-badge" id="role-label">Guest</span>
-      <div class="avatar" id="user-avatar" style="cursor:pointer">?</div>
+      <div class="avatar" id="user-avatar" onclick="handleAvatarClick()" style="cursor:pointer" title="Click to open Account / Portal">?</div>
     </div>
   </header>
 
-  <!-- ── Catalog Page ────────────────────────────────────────────────── -->
+  <!-- ════════════════════════════════════════════════════════════════
+       PAGE 1: 📖 CATALOG
+       ════════════════════════════════════════════════════════════════ -->
   <div class="page active" id="page-catalog">
     <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
-      <div class="search-bar">
+      <div class="search-bar" style="flex:1">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search by title, author, ISBN, or keyword..." id="catalog-search" oninput="filterBooks()">
+        <input type="text" placeholder="Search by title, author, ISBN, or subject..." id="catalog-search" oninput="filterBooks()">
       </div>
     </div>
+
     <div class="filters" style="margin-bottom:16px">
       <select class="form-select" style="width:auto" id="filter-genre" onchange="filterBooks()">
         <option value="">All Categories & Subjects</option>
@@ -72,106 +97,598 @@
         <option value="Fiction">📖 Fiction & Novels</option>
         <option value="Technology">💻 Computer & Technology</option>
         <option value="Self-Help">🧠 Self-Help & Motivation</option>
-        <option value="History">🏛 History & Civics</option>
         <option value="Biography">👤 Biography & Memoirs</option>
         <option value="Philosophy">🕉 Philosophy & Heritage</option>
       </select>
       <select class="form-select" style="width:auto" id="filter-status" onchange="filterBooks()">
         <option value="">All Status</option>
-        <option>Available</option><option>Borrowed</option><option>Reserved</option>
+        <option>Available</option>
+        <option>Borrowed</option>
+        <option>Reserved</option>
       </select>
       <select class="form-select" style="width:auto" id="filter-branch" onchange="filterBooks()">
         <option value="">All Branches</option>
-        <option>Main Branch</option><option>North Branch</option><option>East Wing</option>
+        <option>Main Branch</option>
+        <option>North Branch</option>
+        <option>East Wing</option>
       </select>
     </div>
-    <div id="book-count" style="font-size:12px;color:var(--text3);margin-bottom:10px"></div>
+
+    <div id="book-count" style="font-size:12px;color:var(--text3);margin-bottom:12px"></div>
     <div class="book-grid" id="book-grid"></div>
   </div>
 
-  <!-- ── Modal Overlay ────────────────────────────────────────────── -->
+  <!-- ════════════════════════════════════════════════════════════════
+       PAGE 2: 👤 MEMBER / MY ACCOUNT
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="page" id="page-member">
+    <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center;background:var(--navy2);padding:16px 20px;border-radius:12px;border:1px solid var(--border)">
+      <div class="avatar" id="profile-avatar" style="width:50px;height:50px;font-size:17px">JD</div>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:var(--text)" id="profile-name">John Doe</div>
+        <div style="font-size:12px;color:var(--text3)" id="profile-sub">Member since Aug 2026 · ID #M10618 · Premium Scholar</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <button class="btn btn-secondary btn-sm" id="qr-btn" onclick="showQR('member','M10618','John Doe')">🪪 QR Card</button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('catalog')">Browse Books →</button>
+      </div>
+    </div>
+
+    <div id="member-fine-notice"></div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="memberTab(this,'mt-current')">Current Loans</div>
+      <div class="tab" onclick="memberTab(this,'mt-history')">Borrowing History</div>
+    </div>
+
+    <!-- Current Loans Tab -->
+    <div id="mt-current">
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Books Borrowed</div><div class="stat-val" id="stat-borrowed">3</div><div class="stat-sub">of 5 allowed</div></div>
+        <div class="stat"><div class="stat-label">Overdue Fines</div><div class="stat-val" id="stat-fine" style="color:var(--amber)">₹45</div><div class="stat-sub" id="stat-fine-sub">1 overdue book</div></div>
+        <div class="stat"><div class="stat-label">Books Read</div><div class="stat-val" id="stat-read">47</div><div class="stat-sub">lifetime total</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Active Borrowed Books</span></div>
+        <div class="table-wrap" id="loans-table-wrap"></div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="mt-history" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Lifetime Borrowing History</span></div>
+        <div class="table-wrap" id="history-table-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       PAGE 3: 📚 LIBRARIAN DESK
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="page" id="page-librarian">
+    <div class="tabs">
+      <div class="tab active" onclick="libTab(this,'lt-issue')">📤 Issue / Return</div>
+      <div class="tab" onclick="libTab(this,'lt-members')">👥 Members</div>
+      <div class="tab" onclick="libTab(this,'lt-fines')">⚠️ Fines</div>
+      <div class="tab" onclick="libTab(this,'lt-inventory')">📚 Inventory</div>
+      <div class="tab" onclick="libTab(this,'lt-import')">📊 Bulk Import</div>
+    </div>
+
+    <!-- Issue / Return Tab -->
+    <div id="lt-issue">
+      <div class="grid-2">
+        <!-- 📤 ISSUE BOOK CARD -->
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+            <span class="card-title">📤 Issue Book</span>
+            <button class="btn btn-sm btn-ghost" style="color:var(--teal);border:1px solid var(--teal)" onclick="simulateQRScan('issue')">
+              📷 Scan Book QR
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Member ID or Name</label>
+            <input class="form-input" placeholder="Enter Member ID (e.g. M10618) or Name" id="issue-member" value="M10618 (John Doe)">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Book or Scan Barcode</label>
+            <select class="form-select" id="issue-book-select" onchange="onBookSelectChange(this, 'issue-book-preview', 'issue-book')">
+              <option value="">-- Choose Book from Inventory --</option>
+              <option value="Dune" selected>📖 Dune (Frank Herbert) - ISBN-978-0441013593</option>
+              <option value="Clean Code">📖 Clean Code (Robert C. Martin) - ISBN-978-0132350884</option>
+              <option value="Atomic Habits">📖 Atomic Habits (James Clear) - ISBN-978-0735211292</option>
+              <option value="Shrimad Bhagavad Gita">📖 Shrimad Bhagavad Gita - ISBN-978-8120800010</option>
+              <option value="The Pragmatic Programmer">📖 The Pragmatic Programmer - ISBN-978-0201616224</option>
+            </select>
+            <input type="hidden" id="issue-book" value="Dune">
+          </div>
+
+          <!-- Book Preview Card -->
+          <div id="issue-book-preview" style="background:rgba(13,148,136,0.1);border:1px solid var(--teal);border-radius:8px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+            <div style="font-size:28px">📖</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:700;color:var(--text)" id="issue-preview-title">Dune</div>
+              <div style="font-size:11px;color:var(--text2)" id="issue-preview-sub">Author: Frank Herbert · ISBN-978-0441013593</div>
+              <div style="font-size:11px;color:#10b981;margin-top:2px">✓ Verified in Stock · Main Branch</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Due Date <span style="color:var(--teal);font-size:11px">(7 Days Free Loan)</span></label>
+            <input class="form-input" type="date" id="issue-due" value="2026-07-28">
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:700" onclick="issueBook()">
+            ⚡ 1-Click Issue Book to Member
+          </button>
+        </div>
+
+        <!-- 📥 RETURN BOOK CARD -->
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+            <span class="card-title">📥 Return Book</span>
+            <button class="btn btn-sm btn-ghost" style="color:var(--teal);border:1px solid var(--teal)" onclick="simulateQRScan('return')">
+              📷 Scan Book QR
+            </button>
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+              <span>Member ID or Student Name *</span>
+              <span style="color:var(--teal);font-size:11px;cursor:pointer" onclick="simulateQRScan('member')">🪪 Scan Student Pass QR</span>
+            </label>
+            <input type="text" class="form-input" id="return-member-input" value="M10618 (John Doe)" placeholder="Enter Member ID e.g. M10618..." oninput="filterReturnBooksByMember(this.value)">
+          </div>
+
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Select Book Issued to Member</label>
+            <select class="form-select" id="return-book-select" onchange="onBookSelectChange(this, 'return-book-preview', 'return-book')">
+              <option value="The Pragmatic Programmer" selected>📖 The Pragmatic Programmer (Andrew Hunt) - Overdue (₹45)</option>
+              <option value="Dune">📖 Dune (Frank Herbert) - On Time (₹0)</option>
+              <option value="Sapiens">📖 Sapiens (Yuval Noah Harari) - On Time (₹0)</option>
+            </select>
+            <input type="hidden" id="return-book" value="The Pragmatic Programmer">
+          </div>
+
+          <!-- Return Timeline Breakdown -->
+          <div id="return-book-preview" style="background:rgba(217,119,6,0.08);border:1px solid var(--amber);border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+              <div style="font-size:28px">📙</div>
+              <div style="flex:1">
+                <div style="font-size:15px;font-weight:700;color:var(--text)" id="return-preview-title">The Pragmatic Programmer</div>
+                <div style="font-size:12px;color:var(--text2)" id="return-preview-sub">Issued to: <strong style="color:var(--teal)">John Doe (#M10618)</strong></div>
+              </div>
+              <div id="return-status-badge">
+                <span class="badge badge-amber" style="font-size:12px;padding:5px 10px">⚠️ 9 Days Overdue</span>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;background:var(--navy);padding:10px;border-radius:8px;margin-bottom:12px;border:1px solid var(--border)">
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">📅 Issue Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px" id="ret-issue-date">12 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">⏳ Free Due Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--teal);margin-top:2px" id="ret-due-date">19 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">📆 Return Date</div>
+                <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px" id="ret-today-date">28 May 2026</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase">⏱️ Days Kept</div>
+                <div style="font-size:12px;font-weight:700;color:var(--amber);margin-top:2px" id="ret-total-days">16 Days</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(15,23,42,0.6);padding:10px 14px;border-radius:8px;border:1px solid var(--border)">
+              <div>
+                <div style="font-size:11px;color:var(--text3)">Fine Calculation Formula</div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:1px" id="ret-fine-formula">9 Overdue Days × ₹5.00/day</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:10px;color:var(--text3)">Total Fine Due</div>
+                <div style="font-size:22px;font-weight:800;color:var(--amber)" id="fine-preview">₹45.00</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;padding:12px;font-weight:700" onclick="processReturn()">
+            📥 Process 1-Click Return
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><span class="card-title">Recent Transactions</span></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Type</th><th>Member</th><th>Book</th><th>Date</th><th>Fine</th><th>Action</th></tr>
+            <tr>
+              <td><span class="badge badge-teal">Issue</span></td>
+              <td class="td-main">Jane Doe</td><td>Dune</td><td>Jun 15</td><td>—</td>
+              <td><button class="btn btn-sm btn-ghost" onclick="showQR('book','ISBN-978-0441013593','Dune')">QR</button></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Return</span></td>
+              <td class="td-main">Bob Smith</td><td>Atomic Habits</td><td>Jun 14</td><td><span class="badge badge-green">₹0</span></td>
+              <td><button class="btn btn-sm btn-ghost" onclick="showQR('book','ISBN-978-0735211292','Atomic Habits')">QR</button></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members Tab -->
+    <div id="lt-members" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Registered Library Members</span></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Member</th><th>ID</th><th>Type</th><th>Books Out</th><th>Fines</th><th>Status</th><th>Actions</th></tr>
+            <tr>
+              <td><div class="td-main">John Doe</div><div style="font-size:11px;color:var(--text3)">john.doe@email.com</div></td>
+              <td>M10618</td><td><span class="badge badge-teal">Premium</span></td><td>3/5</td>
+              <td style="color:var(--amber)">₹45</td><td><span class="badge badge-green">Active</span></td>
+              <td><button class="btn btn-sm btn-ghost" onclick="notify('Reminder sent to John Doe','success')">Remind</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-main">Jane Doe</div><div style="font-size:11px;color:var(--text3)">jane@email.com</div></td>
+              <td>M00142</td><td><span class="badge badge-teal">Premium</span></td><td>1/5</td>
+              <td>₹0</td><td><span class="badge badge-green">Active</span></td>
+              <td><button class="btn btn-sm btn-ghost" onclick="notify('Notice sent','success')">Remind</button></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fines Tab -->
+    <div id="lt-fines" style="display:none">
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Total Outstanding</div><div class="stat-val" style="color:var(--amber)">₹685</div></div>
+        <div class="stat"><div class="stat-label">Collected This Month</div><div class="stat-val" style="color:var(--green)">₹1,240</div></div>
+        <div class="stat"><div class="stat-label">Overdue Books</div><div class="stat-val">8</div></div>
+        <div class="stat"><div class="stat-label">Members Blocked</div><div class="stat-val" style="color:var(--red)">2</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Pending Fine Dues</span></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Member</th><th>Book</th><th>Days Overdue</th><th>Fine</th><th>Actions</th></tr>
+            <tr>
+              <td class="td-main">John Doe</td><td>The Pragmatic Programmer</td>
+              <td><span class="badge badge-amber">9 days</span></td>
+              <td style="color:var(--amber);font-weight:700">₹45</td>
+              <td><button class="btn btn-sm btn-primary" onclick="notify('Fine ₹45 collected!','success')">Collect Cash</button></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div id="lt-inventory" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;background:var(--navy2);padding:12px 16px;border-radius:8px;border:1px solid var(--border);flex-wrap:wrap;gap:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px;font-weight:600;color:var(--text)">📍 Assigned Branch Stock:</span>
+          <span class="badge badge-teal" style="font-size:13px;padding:5px 12px">Main Branch</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="inv-search" class="form-input" placeholder="Search book or ISBN..." style="width:200px;padding:6px 12px;font-size:13px" onkeyup="filterInventoryTable()">
+          <button class="btn btn-primary btn-sm" onclick="showAddCopyModal('Clean Code')">+ Add Stock</button>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="stat"><div class="stat-label">Total Stock Copies</div><div class="stat-val" id="inv-stat-total">1,204</div></div>
+        <div class="stat"><div class="stat-label">Available Copies</div><div class="stat-val" style="color:var(--green)" id="inv-stat-avail">982</div></div>
+        <div class="stat"><div class="stat-label">Borrowed Copies</div><div class="stat-val" style="color:var(--amber)" id="inv-stat-borrowed">222</div></div>
+        <div class="stat"><div class="stat-label">Low / Out of Stock</div><div class="stat-val" style="color:var(--red)" id="inv-stat-low">2 Titles</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">📚 Stock Inventory List</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Book Title & Author</th><th>ISBN</th><th>Shelf / Rack</th><th>Total</th><th>Available</th><th>Borrowed</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Import Tab -->
+    <div id="lt-import" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 Bulk Books Excel/CSV Import</span>
+          <button class="btn btn-ghost btn-sm" onclick="downloadSampleCSV()">📥 Download Template</button>
+        </div>
+        <div style="border:2px dashed var(--teal);background:rgba(13,148,136,0.05);border-radius:8px;padding:32px;text-align:center;margin-top:12px;margin-bottom:16px;cursor:pointer" onclick="document.getElementById('csv-file-input').click()">
+          <input type="file" id="csv-file-input" accept=".csv,.xlsx" style="display:none" onchange="handleCSVSelect(event)">
+          <div style="font-size:36px;margin-bottom:8px">📊</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)" id="csv-filename-label">Click to Browse or Drop Excel/CSV Sheet here</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">Columns: Title, Author, Genre, ISBN, Copies, Rack</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="uploadCSV()">📁 Import Books to Database</button>
+          <button class="btn btn-secondary" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+        </div>
+        <div id="import-progress" style="margin-top:16px;display:none">
+          <div class="prog-bar"><div class="prog-fill" id="import-bar" style="width:0%;transition:width 0.5s"></div></div>
+          <div id="import-status" style="font-size:11px;color:var(--text3);margin-top:4px">Processing...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       PAGE 4: ⚙️ ADMIN PANEL
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="page" id="page-admin">
+    <div class="tabs">
+      <div class="tab active" onclick="adminTab(this,'at-roles')">👥 Member & Role Management</div>
+      <div class="tab" onclick="adminTab(this,'at-branches')">🏛 Campus Branch Management</div>
+      <div class="tab" onclick="adminTab(this,'at-payment')">⚙️ Free Library Policy & Ledger</div>
+    </div>
+
+    <!-- Roles & Users Tab -->
+    <div id="at-roles">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">User & Role Management (MongoDB)</span>
+          <button class="btn btn-primary btn-sm" onclick="openRegisterModal()">+ Add User / Staff</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Role</th><th>Membership</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-members-table">
+              <tr><td colspan="6" style="text-align:center;color:var(--text3)">Loading member database...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Branches Tab -->
+    <div id="at-branches" style="display:none">
+      <div class="grid-3" id="branches-container"></div>
+    </div>
+
+    <!-- Policy & Ledger Tab -->
+    <div id="at-payment" style="display:none">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚙️ Policy & Fine Rules</span></div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Book Borrowing Fee</label>
+              <input class="form-input" value="₹0 (100% Free Borrowing)" readonly style="background:var(--navy2);color:var(--green);font-weight:700">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Free Borrowing Days</label>
+              <input class="form-input" value="7 Days" readonly style="background:var(--navy2);color:var(--teal);font-weight:700">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Overdue Fine (per day after 7 days)</label>
+              <input class="form-input" id="cfg-fine-rate" value="15" type="number">
+            </div>
+            <button class="btn btn-primary" onclick="notify('System Policy & Rules saved!','success')">Save Settings</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">📊 Revenue & Fine Summary</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="list-item"><span>📖 Books Borrowed Free</span><span style="color:var(--green);font-weight:700">1,845 Books</span></div>
+            <div class="list-item"><span>⚠️ Overdue Fines Collected</span><span style="color:var(--amber);font-weight:700">₹8,450</span></div>
+            <div class="list-item"><span>🚨 Pending Overdue Fines</span><span style="color:var(--red);font-weight:700">₹685</span></div>
+            <div class="list-item" style="border:none;background:rgba(13,148,136,0.1);padding:10px;border-radius:6px"><span>Borrowing Charge</span><span style="color:var(--green);font-weight:800">₹0 (Free Access)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ledger Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📜 Audit Ledger</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Txn ID</th><th>Name</th><th>Detail</th><th>Category</th><th>Amount</th><th>Date</th><th>Mode</th></tr>
+            </thead>
+            <tbody id="rev-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       PAGE 5: 🔐 UNIFIED AUTHENTICATION & LOGIN HUB
+       ════════════════════════════════════════════════════════════════ -->
+  <div class="page" id="page-login">
+    <div class="auth-container">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:36px;margin-bottom:6px">📖</div>
+        <h2 style="margin-bottom:4px;font-size:22px;color:var(--text)">Alexandria Sign In</h2>
+        <p style="font-size:12px;color:var(--text3)" id="auth-role-desc">Member Portal — Personal reading history, active loans & fines</p>
+      </div>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs">
+        <div class="role-tab active" onclick="selectAuthTab('member', this)">👤 Member</div>
+        <div class="role-tab" onclick="selectAuthTab('librarian', this)">📚 Librarian</div>
+        <div class="role-tab" onclick="selectAuthTab('admin', this)">👑 Admin</div>
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuth(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address / User ID</label>
+          <input class="form-input" type="email" id="auth-email" placeholder="e.g. john.doe@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" type="password" id="auth-password" placeholder="••••••••" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('auth-password', this)">👁</button>
+          </div>
+        </div>
+
+        <div style="text-align:right;margin-top:-6px;margin-bottom:14px">
+          <a href="#" style="font-size:12px;color:var(--teal);text-decoration:none" onclick="openForgotModal()">Forgot Password?</a>
+        </div>
+
+        <button class="btn btn-primary" type="submit" style="width:100%;padding:12px;font-weight:700">Sign In to Dashboard →</button>
+      </form>
+
+      <!-- 1-Click Fast Bypass Buttons -->
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+        <button class="btn" style="width:100%;padding:10px;background:rgba(16,185,129,0.15);border:1px solid #10b981;color:#10b981;font-weight:700;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="quickLogin('member')">
+          ⚡ 1-Click Member Bypass (John Doe)
+        </button>
+        <button class="btn" style="width:100%;padding:10px;background:rgba(217,119,6,0.15);border:1px solid var(--amber);color:var(--amber);font-weight:700;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="quickLogin('librarian')">
+          ⚡ 1-Click Librarian Desk Bypass
+        </button>
+        <button class="btn" style="width:100%;padding:10px;background:rgba(239,68,68,0.15);border:1px solid var(--red);color:var(--red);font-weight:700;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="quickLogin('admin')">
+          ⚡ 1-Click Administrator Bypass
+        </button>
+      </div>
+
+      <div style="margin-top:18px;text-align:center;font-size:13px;color:var(--text3)">
+        Need an account? <a href="#" style="color:var(--teal);text-decoration:none;font-weight:600" onclick="openRegisterModal()">Register Free Member Account</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Global Modals & Overlays ────────────────────────────────── -->
   <div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
     <div class="modal" id="modal-content"></div>
   </div>
 
-  <!-- ── Notification Container ───────────────────────────────────── -->
+  <!-- Register Modal -->
+  <div class="modal-overlay" id="register-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+      <div class="modal-title">📝 Create New Account</div>
+      <div class="modal-sub">Join Alexandria Digital Library — 100% Free!</div>
+
+      <div class="step active" id="reg-step-1">
+        <form onsubmit="submitRegister(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-input" type="text" id="reg-name" placeholder="e.g. Rahul Sharma" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input class="form-input" type="email" id="reg-email" placeholder="e.g. rahul@gmail.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <div class="pw-wrap">
+              <input class="form-input" type="password" id="reg-password" placeholder="Min 8 characters" minlength="8" required oninput="checkStrength(this.value)">
+              <button type="button" class="pw-toggle" onclick="togglePw('reg-password', this)">👁</button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px" id="strength-label"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password *</label>
+            <input class="form-input" type="password" id="reg-confirm" placeholder="Re-enter password" required>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;margin-top:6px;padding:11px">Create Free Account →</button>
+        </form>
+      </div>
+
+      <div class="step" id="reg-step-2">
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-size:48px;margin-bottom:8px">🎉</div>
+          <div style="font-size:16px;font-weight:700;color:var(--teal);margin-bottom:6px">Account Created Successfully!</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:14px">You have 7 days free borrowing limit on all books.</div>
+          <div id="reg-member-id" style="background:var(--navy);border-radius:8px;padding:10px;font-family:monospace;font-size:13px;color:var(--teal);margin-bottom:16px"></div>
+          <button class="btn btn-primary" style="width:100%" onclick="goToLogin()">Sign In Now →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal-overlay" id="forgot-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeForgotModal()">✕</button>
+
+      <div class="step active" id="fp-step-1">
+        <div class="modal-title">🔑 Forgot Password?</div>
+        <div class="modal-sub">Enter your email to receive a reset OTP code.</div>
+        <form onsubmit="sendOtp(event)">
+          <div class="form-group">
+            <label class="form-label">Registered Email</label>
+            <input class="form-input" type="email" id="fp-email" placeholder="e.g. john.doe@email.com" required>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;padding:11px">Send OTP Code →</button>
+        </form>
+      </div>
+
+      <div class="step" id="fp-step-2">
+        <div class="modal-title">📲 Enter 4-Digit OTP</div>
+        <div class="modal-sub">Enter the code sent to your email (Demo code: 1234).</div>
+        <form onsubmit="submitOtp(event)">
+          <div class="otp-inputs">
+            <input type="text" maxlength="1" id="otp-1" oninput="moveToNext(this,'otp-2')" autofocus>
+            <input type="text" maxlength="1" id="otp-2" oninput="moveToNext(this,'otp-3')" onkeydown="handleOtpKey(event,this,'otp-1')">
+            <input type="text" maxlength="1" id="otp-3" oninput="moveToNext(this,'otp-4')" onkeydown="handleOtpKey(event,this,'otp-2')">
+            <input type="text" maxlength="1" id="otp-4" onkeydown="handleOtpKey(event,this,'otp-3')">
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;padding:11px">Verify OTP Code →</button>
+        </form>
+      </div>
+
+      <div class="step" id="fp-step-3">
+        <div class="modal-title">🔒 Set New Password</div>
+        <div class="modal-sub">Create a strong new password for your account.</div>
+        <form onsubmit="submitNewPw(event)">
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input class="form-input" type="password" id="fp-new-pw" placeholder="Min 8 characters" minlength="8" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input class="form-input" type="password" id="fp-confirm-pw" placeholder="Re-enter new password" required>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;padding:11px">Update Password →</button>
+        </form>
+      </div>
+
+      <div class="step" id="fp-step-4">
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-size:44px;margin-bottom:8px">✅</div>
+          <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">Password Reset Complete!</div>
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px">You can now sign in with your new password.</div>
+          <button class="btn btn-primary" style="width:100%" onclick="closeForgotModal();showPage('login')">Go to Login →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="notif" id="notif-container"></div>
 
 </div><!-- .app -->
 
-<!-- ── JavaScript Files ──────────────────────────────────────────── -->
+<!-- ── JavaScript Bundle ─────────────────────────────────────────── -->
 <script src="js/data.js"></script>
 <script src="js/books.js"></script>
 <script src="js/modals.js"></script>
-<script>
-  function showBranchModal() {
-    showModal('📍 Select Branch', `
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${['Main Branch','North Branch','East Wing'].map(b => `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--navy);border-radius:8px;cursor:pointer;border:1px solid var(--border)" onclick="switchBranch('${b}')">
-            <div><div style="font-size:14px;font-weight:500">${b}</div><div style="font-size:11px;color:var(--text3)">Open · Books available</div></div>
-            <span>→</span>
-          </div>
-        `).join('')}
-      </div>
-    `);
-  }
-
-  function switchBranch(b) {
-    document.getElementById('current-branch').textContent = b;
-    closeModal();
-    notify(`Switched to ${b}`, 'info');
-  }
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    // ── Dynamic nav & avatar based on login state ──
-    const name  = localStorage.getItem('user_name')  || '';
-    const role  = localStorage.getItem('user_role')  || '';
-    const nav   = document.getElementById('main-nav');
-    const avatar = document.getElementById('user-avatar');
-    const roleLabel = document.getElementById('role-label');
-
-    if (name && role) {
-      // Logged in
-      const parts    = name.trim().split(' ').filter(Boolean);
-      const initials = parts.map(w => w[0]).join('').toUpperCase().slice(0, 2);
-      if (avatar) { avatar.textContent = initials; }
-      if (roleLabel) roleLabel.textContent = role.charAt(0).toUpperCase() + role.slice(1);
-
-      // Role-specific nav
-      let dashLink = '';
-      let dashHref = 'member.html';
-      if (role === 'admin')          { dashLink = 'Admin Panel'; dashHref = 'admin.html'; }
-      else if (role === 'librarian') { dashLink = 'Librarian Desk'; dashHref = 'librarian.html'; }
-      else                           { dashLink = 'My Account'; dashHref = 'member.html'; }
-
-      // Make avatar clickable to dashboard
-      if (avatar) { avatar.style.cursor = 'pointer'; avatar.onclick = () => window.location.href = dashHref; }
-
-      if (nav) nav.innerHTML = `
-        <a class="nav-btn active" href="index.html">Catalog</a>
-        <a class="nav-btn" href="${dashHref}">${dashLink}</a>
-        <a class="nav-btn" href="login.html" onclick="localStorage.removeItem('user_role')" style="color:var(--red);font-weight:600">🚪 Logout</a>
-      `;
-    } else {
-      // Guest / not logged in
-      if (avatar) { avatar.textContent = '?'; avatar.onclick = () => window.location.href = 'login.html'; }
-      if (roleLabel) roleLabel.textContent = 'Guest';
-      if (nav) nav.innerHTML = `
-        <a class="nav-btn active" href="index.html">Catalog</a>
-        <a class="nav-btn" href="login.html" style="color:var(--teal);font-weight:600">🔐 Login</a>
-      `;
-    }
-
-    // ── Load books ──
-    try {
-      await loadInitialData();
-      renderBooks(BOOKS, 'book-grid');
-      document.getElementById('book-count').textContent = `${BOOKS.length} books found`;
-    } catch (error) {
-      console.error('Failed to load books:', error);
-    }
-  });
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>
