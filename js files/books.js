@@ -329,11 +329,35 @@ function getBookCoverTheme(b) {
 function getBookCoverUrl(b) {
   if (b.coverUrl) return b.coverUrl;
   const t = (b.title || '').toLowerCase();
-  if (t.includes('gita')) return 'covers/gita.png';
+
+  // Explicit Cover Photo Mappings (All 23 Books)
+  if (t.includes('rashmirathi') || t.includes('रश्मिरथी')) return 'covers/rashmirathi.jpg';
+  if (t.includes('gitanjali')) return 'covers/gitanjali.jpg';
+  if (t.includes('madhushala') || t.includes('मधुशाला')) return 'covers/madhushala.jpg';
+  if (t.includes('science') && (t.includes('10') || t.includes('ncert'))) return 'covers/ncert_science10.jpg';
+  if (t.includes('mathematics') && t.includes('10')) return 'covers/ncert_math10.jpg';
+  if (t.includes('social') && (t.includes('10') || t.includes('ncert'))) return 'covers/ncert_social10.jpg';
+  if (t.includes('physics') && (t.includes('verma') || t.includes('concepts'))) return 'covers/physics_hcverma.jpg';
+  if (t.includes('chemistry')) return 'covers/ncert_chemistry12.jpg';
+  if (t.includes('biology') || t.includes('trueman')) return 'covers/biology_trueman.jpg';
+  if (t.includes('rd sharma') || (t.includes('mathematics') && t.includes('sharma'))) return 'covers/rdsharma.jpg';
+  if (t.includes('mathematics') && t.includes('12')) return 'covers/ncert_math12.jpg';
+  if (t.includes('history')) return 'covers/indian_history12.jpg';
   if (t.includes('constitution') || t.includes('samvidhan')) return 'covers/samvidhan.png';
+  if (t.includes('geography')) return 'covers/ncert_geography12.jpg';
+  if (t.includes('double entry') || t.includes('grewal') || t.includes('book keeping')) return 'covers/tsgrewal_accounts.jpg';
+  if (t.includes('economic') || t.includes('macroeconomics')) return 'covers/ncert_economics12.jpg';
+  if (t.includes('laxmikanth') || t.includes('polity')) return 'covers/laxmikanth.jpg';
+  if (t.includes('irodov')) return 'covers/irodov.jpg';
+  if (t.includes('aggarwal') || t.includes('quantitative aptitude')) return 'covers/rsaggarwal_aptitude.jpg';
+  if (t.includes('wings of fire') || t.includes('kalam')) return 'covers/wingsoffire.jpg';
+  if (t.includes('bhagavad gita') || (t.includes('gita') && !t.includes('gitanjali'))) return 'covers/gita.png';
+  if (t.includes('atomic habits')) return 'covers/atomichabits.jpg';
+  if (t.includes('clean code')) return 'covers/cleancode.jpg';
   if (t.includes('arthashastra')) return 'covers/arthashastra.png';
   if (t.includes('ramayana')) return 'covers/ramayana.png';
   if (t.includes('mahabharata')) return 'covers/mahabharata.png';
+
   if (b.isbn && typeof getOpenLibraryCover === 'function') {
     return getOpenLibraryCover(b.isbn, 'M');
   }

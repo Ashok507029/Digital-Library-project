@@ -11,43 +11,43 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://ashokmorda20_db_user:a
 // ── Book Data (from existing data.js) ──────────────────────────────
 const BOOKS = [
   // 📜 Poetry & Literature
-  { title:'Rashmirathi (रश्मिरथी)', author:'Ramdhari Singh Dinkar', genre:'Poetry & Literature', status:'Available', cover:'#b45309', emoji:'📜', rating:5.0, year:1952, isbn:'9788170281234', copies:8, borrowed:1, branch:'Main Branch' },
-  { title:'Gitanjali', author:'Rabindranath Tagore', genre:'Poetry & Literature', status:'Available', cover:'#7c3aed', emoji:'🌸', rating:4.9, year:1910, isbn:'9780333904312', copies:6, borrowed:0, branch:'East Wing' },
-  { title:'Madhushala (मधुशाला)', author:'Harivansh Rai Bachchan', genre:'Poetry & Literature', status:'Available', cover:'#991b1b', emoji:'🍷', rating:4.9, year:1935, isbn:'9788126702315', copies:10, borrowed:2, branch:'Main Branch' },
+  { title:'Rashmirathi (रश्मिरथी)', author:'Ramdhari Singh Dinkar', genre:'Poetry & Literature', status:'Available', cover:'#b45309', emoji:'📜', rating:5.0, year:1952, isbn:'9788170281234', copies:8, borrowed:1, branch:'Main Branch', coverUrl:'covers/rashmirathi.jpg' },
+  { title:'Gitanjali', author:'Rabindranath Tagore', genre:'Poetry & Literature', status:'Available', cover:'#7c3aed', emoji:'🌸', rating:4.9, year:1910, isbn:'9780333904312', copies:6, borrowed:0, branch:'East Wing', coverUrl:'covers/gitanjali.jpg' },
+  { title:'Madhushala (मधुशाला)', author:'Harivansh Rai Bachchan', genre:'Poetry & Literature', status:'Available', cover:'#991b1b', emoji:'🍷', rating:4.9, year:1935, isbn:'9788126702315', copies:10, borrowed:2, branch:'Main Branch', coverUrl:'covers/madhushala.jpg' },
 
   // 📚 Class 10th (NCERT)
-  { title:'NCERT Science - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#0284c7', emoji:'🧪', rating:4.8, year:2023, isbn:'9788174506459', copies:15, borrowed:3, branch:'Main Branch' },
-  { title:'NCERT Mathematics - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#0d9488', emoji:'📐', rating:4.7, year:2023, isbn:'9788174506343', copies:12, borrowed:4, branch:'North Branch' },
-  { title:'NCERT Social Science - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#d97706', emoji:'🌍', rating:4.6, year:2023, isbn:'9788174506893', copies:10, borrowed:2, branch:'East Wing' },
+  { title:'NCERT Science - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#0284c7', emoji:'🧪', rating:4.8, year:2023, isbn:'9788174506459', copies:15, borrowed:3, branch:'Main Branch', coverUrl:'covers/ncert_science10.jpg' },
+  { title:'NCERT Mathematics - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#0d9488', emoji:'📐', rating:4.7, year:2023, isbn:'9788174506343', copies:12, borrowed:4, branch:'North Branch', coverUrl:'covers/ncert_math10.jpg' },
+  { title:'NCERT Social Science - Class 10th', author:'NCERT Editorial Board', genre:'Class 10th NCERT', status:'Available', cover:'#d97706', emoji:'🌍', rating:4.6, year:2023, isbn:'9788174506893', copies:10, borrowed:2, branch:'East Wing', coverUrl:'covers/ncert_social10.jpg' },
 
   // 🧪 Class 12th Science
-  { title:'Concepts of Physics (Vol 1 & 2)', author:'Dr. H.C. Verma', genre:'Class 12th Science', status:'Available', cover:'#1e3a5f', emoji:'⚛️', rating:5.0, year:2021, isbn:'9788177091877', copies:14, borrowed:5, branch:'Main Branch' },
-  { title:'NCERT Chemistry Part 1 & 2 - Class 12', author:'NCERT Board', genre:'Class 12th Science', status:'Available', cover:'#059669', emoji:'⚗️', rating:4.8, year:2023, isbn:'9788174507111', copies:12, borrowed:3, branch:'North Branch' },
-  { title:'Trueman Elementary Biology - Class 12', author:'K.N. Bhatia & M.P. Tyagi', genre:'Class 12th Science', status:'Available', cover:'#15803d', emoji:'🧬', rating:4.7, year:2022, isbn:'9788187223441', copies:8, borrowed:2, branch:'Main Branch' },
+  { title:'Concepts of Physics (Vol 1 & 2)', author:'Dr. H.C. Verma', genre:'Class 12th Science', status:'Available', cover:'#1e3a5f', emoji:'⚛️', rating:5.0, year:2021, isbn:'9788177091877', copies:14, borrowed:5, branch:'Main Branch', coverUrl:'covers/physics_hcverma.jpg' },
+  { title:'NCERT Chemistry Part 1 & 2 - Class 12', author:'NCERT Board', genre:'Class 12th Science', status:'Available', cover:'#059669', emoji:'⚗️', rating:4.8, year:2023, isbn:'9788174507111', copies:12, borrowed:3, branch:'North Branch', coverUrl:'covers/ncert_chemistry12.jpg' },
+  { title:'Trueman Elementary Biology - Class 12', author:'K.N. Bhatia & M.P. Tyagi', genre:'Class 12th Science', status:'Available', cover:'#15803d', emoji:'🧬', rating:4.7, year:2022, isbn:'9788187223441', copies:8, borrowed:2, branch:'Main Branch', coverUrl:'covers/biology_trueman.jpg' },
 
   // 📐 Class 12th Mathematics
-  { title:'Mathematics for Class 12 (RD Sharma)', author:'Dr. R.D. Sharma', genre:'Class 12th Maths', status:'Available', cover:'#1d4ed8', emoji:'📐', rating:4.9, year:2023, isbn:'9789353162009', copies:15, borrowed:6, branch:'Main Branch' },
-  { title:'NCERT Mathematics Class 12th (Part 1 & 2)', author:'NCERT Board', genre:'Class 12th Maths', status:'Available', cover:'#2563eb', emoji:'📊', rating:4.7, year:2023, isbn:'9788174506503', copies:10, borrowed:2, branch:'North Branch' },
+  { title:'Mathematics for Class 12 (RD Sharma)', author:'Dr. R.D. Sharma', genre:'Class 12th Maths', status:'Available', cover:'#1d4ed8', emoji:'📐', rating:4.9, year:2023, isbn:'9789353162009', copies:15, borrowed:6, branch:'Main Branch', coverUrl:'covers/rdsharma.jpg' },
+  { title:'NCERT Mathematics Class 12th (Part 1 & 2)', author:'NCERT Board', genre:'Class 12th Maths', status:'Available', cover:'#2563eb', emoji:'📊', rating:4.7, year:2023, isbn:'9788174506503', copies:10, borrowed:2, branch:'North Branch', coverUrl:'covers/ncert_math12.jpg' },
 
   // 🎨 Class 12th Arts & Humanities
-  { title:'Themes in Indian History (Class 12)', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#9a3412', emoji:'🏛️', rating:4.8, year:2023, isbn:'9788174507203', copies:10, borrowed:1, branch:'East Wing' },
+  { title:'Themes in Indian History (Class 12)', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#9a3412', emoji:'🏛️', rating:4.8, year:2023, isbn:'9788174507203', copies:10, borrowed:1, branch:'East Wing', coverUrl:'covers/indian_history12.jpg' },
   { title:'Indian Constitution at Work & Political Theory', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#4338ca', emoji:'📜', rating:4.7, year:2023, isbn:'9788174507319', copies:8, borrowed:2, branch:'Main Branch', coverUrl:'covers/samvidhan.png' },
-  { title:'Fundamentals of Human Geography', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#0369a1', emoji:'🗺️', rating:4.6, year:2023, isbn:'9788174507425', copies:7, borrowed:1, branch:'North Branch' },
+  { title:'Fundamentals of Human Geography', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#0369a1', emoji:'🗺️', rating:4.6, year:2023, isbn:'9788174507425', copies:7, borrowed:1, branch:'North Branch', coverUrl:'covers/ncert_geography12.jpg' },
 
   // 💼 Commerce & Economics
-  { title:'Double Entry Book Keeping (Class 12)', author:'T.S. Grewal', genre:'Commerce & Economics', status:'Available', cover:'#047857', emoji:'📈', rating:4.9, year:2023, isbn:'9789353164010', copies:12, borrowed:4, branch:'Main Branch' },
-  { title:'Indian Economic Development & Macroeconomics', author:'NCERT Board', genre:'Commerce & Economics', status:'Available', cover:'#0f766e', emoji:'💰', rating:4.7, year:2023, isbn:'9788174507500', copies:9, borrowed:2, branch:'East Wing' },
+  { title:'Double Entry Book Keeping (Class 12)', author:'T.S. Grewal', genre:'Commerce & Economics', status:'Available', cover:'#047857', emoji:'📈', rating:4.9, year:2023, isbn:'9789353164010', copies:12, borrowed:4, branch:'Main Branch', coverUrl:'covers/tsgrewal_accounts.jpg' },
+  { title:'Indian Economic Development & Macroeconomics', author:'NCERT Board', genre:'Commerce & Economics', status:'Available', cover:'#0f766e', emoji:'💰', rating:4.7, year:2023, isbn:'9788174507500', copies:9, borrowed:2, branch:'East Wing', coverUrl:'covers/ncert_economics12.jpg' },
 
   // 🎯 Competitive Exams
-  { title:'Indian Polity for UPSC', author:'M. Laxmikanth', genre:'Competitive Exams', status:'Available', cover:'#1e1b4b', emoji:'🎯', rating:5.0, year:2023, isbn:'9789353160128', copies:20, borrowed:8, branch:'Main Branch' },
-  { title:'Problems in General Physics', author:'I.E. Irodov', genre:'Competitive Exams', status:'Available', cover:'#312e81', emoji:'🔬', rating:4.9, year:2020, isbn:'9788123901633', copies:6, borrowed:3, branch:'North Branch' },
-  { title:'Quantitative Aptitude for Competitive Exams', author:'Dr. R.S. Aggarwal', genre:'Competitive Exams', status:'Available', cover:'#1f2937', emoji:'🔢', rating:4.8, year:2022, isbn:'9789352530168', copies:15, borrowed:5, branch:'Main Branch' },
+  { title:'Indian Polity for UPSC', author:'M. Laxmikanth', genre:'Competitive Exams', status:'Available', cover:'#1e1b4b', emoji:'🎯', rating:5.0, year:2023, isbn:'9789353160128', copies:20, borrowed:8, branch:'Main Branch', coverUrl:'covers/laxmikanth.jpg' },
+  { title:'Problems in General Physics', author:'I.E. Irodov', genre:'Competitive Exams', status:'Available', cover:'#312e81', emoji:'🔬', rating:4.9, year:2020, isbn:'9788123901633', copies:6, borrowed:3, branch:'North Branch', coverUrl:'covers/irodov.jpg' },
+  { title:'Quantitative Aptitude for Competitive Exams', author:'Dr. R.S. Aggarwal', genre:'Competitive Exams', status:'Available', cover:'#1f2937', emoji:'🔢', rating:4.8, year:2022, isbn:'9789352530168', copies:15, borrowed:5, branch:'Main Branch', coverUrl:'covers/rsaggarwal_aptitude.jpg' },
 
   // General & Heritage Literature
-  { title:'Wings of Fire', author:'A.P.J. Abdul Kalam', genre:'Biography', status:'Available', cover:'#2a1a0a', emoji:'🔥', rating:4.9, year:1999, isbn:'9788173711466', copies:5, borrowed:2, branch:'Main Branch' },
+  { title:'Wings of Fire', author:'A.P.J. Abdul Kalam', genre:'Biography', status:'Available', cover:'#2a1a0a', emoji:'🔥', rating:4.9, year:1999, isbn:'9788173711466', copies:5, borrowed:2, branch:'Main Branch', coverUrl:'covers/wingsoffire.jpg' },
   { title:'Shrimad Bhagavad Gita', author:'Maharishi Ved Vyasa', genre:'Philosophy', status:'Available', cover:'#d97706', emoji:'🕉️', rating:5.0, year:1999, isbn:'9788170540001', copies:10, borrowed:2, branch:'Main Branch', coverUrl:'covers/gita.png' },
-  { title:'Atomic Habits', author:'James Clear', genre:'Self-Help', status:'Available', cover:'#1a3a1a', emoji:'⚛', rating:4.8, year:2018, isbn:'9780735211292', copies:5, borrowed:3, branch:'Main Branch' },
-  { title:'Clean Code', author:'Robert C. Martin', genre:'Technology', status:'Available', cover:'#1a1a3a', emoji:'💻', rating:4.6, year:2008, isbn:'9780132350884', copies:3, borrowed:1, branch:'Main Branch' }
+  { title:'Atomic Habits', author:'James Clear', genre:'Self-Help', status:'Available', cover:'#1a3a1a', emoji:'⚛', rating:4.8, year:2018, isbn:'9780735211292', copies:5, borrowed:3, branch:'Main Branch', coverUrl:'covers/atomichabits.jpg' },
+  { title:'Clean Code', author:'Robert C. Martin', genre:'Technology', status:'Available', cover:'#1a1a3a', emoji:'💻', rating:4.6, year:2008, isbn:'9780132350884', copies:3, borrowed:1, branch:'Main Branch', coverUrl:'covers/cleancode.jpg' }
 ];
 
 // ── Sample Members ─────────────────────────────────────────────────
