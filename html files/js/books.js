@@ -1,27 +1,404 @@
+// ── Book Cover Theming & Template Generator ──────────────────────────
+function getBookCoverTheme(b) {
+  const t = (b.title || '').toLowerCase();
+  const g = (b.genre || '').toLowerCase();
+
+  // 1. Specific High-Profile Books
+  if (t.includes('rashmirathi') || t.includes('रश्मिरथी')) {
+    return {
+      gradient: 'linear-gradient(145deg, #78350f 0%, #b45309 45%, #451a03 100%)',
+      borderColor: 'rgba(251, 191, 36, 0.5)',
+      frameColor: 'rgba(251, 191, 36, 0.25)',
+      tagBg: 'rgba(251, 191, 36, 0.22)',
+      tagColor: '#fef3c7',
+      tagText: 'महाकाव्य • CLASSIC',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: '☀️',
+      footer: 'दिनकर ग्रंथावली'
+    };
+  }
+  if (t.includes('gitanjali')) {
+    return {
+      gradient: 'linear-gradient(145deg, #581c87 0%, #7c3aed 50%, #2e1065 100%)',
+      borderColor: 'rgba(216, 180, 254, 0.45)',
+      frameColor: 'rgba(216, 180, 254, 0.25)',
+      tagBg: 'rgba(216, 180, 254, 0.2)',
+      tagColor: '#faf5ff',
+      tagText: 'NOBEL PRIZE • 1913',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: '🌸',
+      footer: 'SONG OFFERINGS'
+    };
+  }
+  if (t.includes('madhushala') || t.includes('मधुशाला')) {
+    return {
+      gradient: 'linear-gradient(145deg, #881337 0%, #be123c 50%, #4c0519 100%)',
+      borderColor: 'rgba(254, 205, 211, 0.45)',
+      frameColor: 'rgba(254, 205, 211, 0.25)',
+      tagBg: 'rgba(254, 205, 211, 0.2)',
+      tagColor: '#fff1f2',
+      tagText: 'काव्य कलश • POETRY',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: '🍷',
+      footer: 'बच्चन रचनावली'
+    };
+  }
+  if (t.includes('concepts of physics') || t.includes('h.c. verma') || t.includes('hc verma')) {
+    return {
+      gradient: 'linear-gradient(145deg, #0c4a6e 0%, #0284c7 50%, #082f49 100%)',
+      borderColor: 'rgba(56, 189, 248, 0.45)',
+      frameColor: 'rgba(56, 189, 248, 0.25)',
+      tagBg: 'rgba(56, 189, 248, 0.2)',
+      tagColor: '#e0f2fe',
+      tagText: 'PHYSICS • IIT-JEE',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '⚛️',
+      footer: 'BHARATI BHAWAN'
+    };
+  }
+  if (t.includes('rd sharma') || (t.includes('mathematics') && t.includes('sharma'))) {
+    return {
+      gradient: 'linear-gradient(145deg, #1e3a8a 0%, #2563eb 50%, #172554 100%)',
+      borderColor: 'rgba(147, 197, 253, 0.45)',
+      frameColor: 'rgba(147, 197, 253, 0.25)',
+      tagBg: 'rgba(147, 197, 253, 0.2)',
+      tagColor: '#eff6ff',
+      tagText: 'ADVANCED MATHS',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '📐',
+      footer: 'DHANPAT RAI PUB'
+    };
+  }
+  if (t.includes('trueman') || t.includes('biology')) {
+    return {
+      gradient: 'linear-gradient(145deg, #14532d 0%, #16a34a 50%, #052e16 100%)',
+      borderColor: 'rgba(134, 239, 172, 0.45)',
+      frameColor: 'rgba(134, 239, 172, 0.25)',
+      tagBg: 'rgba(134, 239, 172, 0.2)',
+      tagColor: '#f0fdf4',
+      tagText: 'NEET • BIOLOGY',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: '🧬',
+      footer: 'TRUEMAN EDITIONS'
+    };
+  }
+  if (t.includes('laxmikanth') || t.includes('indian polity')) {
+    return {
+      gradient: 'linear-gradient(145deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%)',
+      borderColor: 'rgba(251, 191, 36, 0.5)',
+      frameColor: 'rgba(251, 191, 36, 0.3)',
+      tagBg: 'rgba(251, 191, 36, 0.2)',
+      tagColor: '#fef3c7',
+      tagText: 'UPSC CIVIL SERVICES',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '🏛️',
+      footer: 'MCGRAW HILL PUB'
+    };
+  }
+  if (t.includes('irodov')) {
+    return {
+      gradient: 'linear-gradient(145deg, #312e81 0%, #4338ca 50%, #1e1b4b 100%)',
+      borderColor: 'rgba(165, 180, 252, 0.45)',
+      frameColor: 'rgba(165, 180, 252, 0.25)',
+      tagBg: 'rgba(165, 180, 252, 0.2)',
+      tagColor: '#eef2ff',
+      tagText: 'JEE ADVANCED',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '🔬',
+      footer: 'MIR PUBLISHERS'
+    };
+  }
+  if (t.includes('aggarwal') || t.includes('quantitative aptitude')) {
+    return {
+      gradient: 'linear-gradient(145deg, #1e293b 0%, #334155 50%, #0f172a 100%)',
+      borderColor: 'rgba(203, 213, 225, 0.45)',
+      frameColor: 'rgba(203, 213, 225, 0.25)',
+      tagBg: 'rgba(203, 213, 225, 0.2)',
+      tagColor: '#f8fafc',
+      tagText: 'COMPETITIVE EXAMS',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '🔢',
+      footer: 'S. CHAND PUBLISHING'
+    };
+  }
+  if (t.includes('wings of fire') || t.includes('abdul kalam')) {
+    return {
+      gradient: 'linear-gradient(145deg, #451a03 0%, #9a3412 50%, #1c1917 100%)',
+      borderColor: 'rgba(251, 146, 60, 0.5)',
+      frameColor: 'rgba(251, 146, 60, 0.25)',
+      tagBg: 'rgba(251, 146, 60, 0.2)',
+      tagColor: '#fff7ed',
+      tagText: 'INSPIRATIONAL MEMOIR',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '🔥',
+      footer: 'UNIVERSITIES PRESS'
+    };
+  }
+  if (t.includes('bhagavad gita') || t.includes('gita')) {
+    return {
+      gradient: 'linear-gradient(145deg, #78350f 0%, #d97706 50%, #451a03 100%)',
+      borderColor: 'rgba(251, 191, 36, 0.5)',
+      frameColor: 'rgba(251, 191, 36, 0.3)',
+      tagBg: 'rgba(251, 191, 36, 0.25)',
+      tagColor: '#fef3c7',
+      tagText: 'श्रीमद्भगवद्गीता',
+      emblemBg: 'rgba(0,0,0,0.35)',
+      icon: '🕉️',
+      footer: 'गीताप्रेस गोरखपुर'
+    };
+  }
+  if (t.includes('atomic habits')) {
+    return {
+      gradient: 'linear-gradient(145deg, #18181b 0%, #27272a 50%, #09090b 100%)',
+      borderColor: 'rgba(250, 204, 21, 0.5)',
+      frameColor: 'rgba(250, 204, 21, 0.3)',
+      tagBg: 'rgba(250, 204, 21, 0.2)',
+      tagColor: '#fef08a',
+      tagText: '#1 BESTSELLER',
+      emblemBg: 'rgba(0,0,0,0.4)',
+      icon: '⚛️',
+      footer: 'PENGUIN RANDOM HOUSE'
+    };
+  }
+  if (t.includes('clean code')) {
+    return {
+      gradient: 'linear-gradient(145deg, #090d16 0%, #1e293b 50%, #020617 100%)',
+      borderColor: 'rgba(45, 212, 191, 0.5)',
+      frameColor: 'rgba(45, 212, 191, 0.25)',
+      tagBg: 'rgba(45, 212, 191, 0.2)',
+      tagColor: '#ccfbf1',
+      tagText: 'SOFTWARE CRAFT',
+      emblemBg: 'rgba(0,0,0,0.4)',
+      icon: '💻',
+      footer: 'PRENTICE HALL'
+    };
+  }
+  if (t.includes('double entry') || t.includes('grewal')) {
+    return {
+      gradient: 'linear-gradient(145deg, #064e3b 0%, #059669 50%, #022c22 100%)',
+      borderColor: 'rgba(110, 231, 183, 0.45)',
+      frameColor: 'rgba(110, 231, 183, 0.25)',
+      tagBg: 'rgba(110, 231, 183, 0.2)',
+      tagColor: '#ecfdf5',
+      tagText: 'COMMERCE • CLASS 12',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: '📈',
+      footer: 'SULTAN CHAND PUB'
+    };
+  }
+
+  // 2. Genre-Based Defaults
+  if (g.includes('ncert') || t.includes('ncert')) {
+    let tag = 'NCERT TEXTBOOK';
+    if (g.includes('10')) tag = 'NCERT • CLASS 10';
+    if (g.includes('12')) tag = 'NCERT • CLASS 12';
+    const baseColor = b.cover || '#0284c7';
+    return {
+      gradient: `linear-gradient(145deg, ${baseColor} 0%, #0f172a 100%)`,
+      borderColor: 'rgba(255,255,255,0.35)',
+      frameColor: 'rgba(255,255,255,0.2)',
+      tagBg: 'rgba(255,255,255,0.2)',
+      tagColor: '#ffffff',
+      tagText: tag,
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '📚',
+      footer: 'NATIONAL COUNCIL NCERT'
+    };
+  }
+  if (g.includes('poetry') || g.includes('literature')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#7c3aed'} 0%, #1e1b4b 100%)`,
+      borderColor: 'rgba(245, 158, 11, 0.45)',
+      frameColor: 'rgba(245, 158, 11, 0.2)',
+      tagBg: 'rgba(245, 158, 11, 0.2)',
+      tagColor: '#fef3c7',
+      tagText: 'LITERATURE & POETRY',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '📜',
+      footer: 'CLASSIC EDITION'
+    };
+  }
+  if (g.includes('science')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#059669'} 0%, #022c22 100%)`,
+      borderColor: 'rgba(56, 189, 248, 0.45)',
+      frameColor: 'rgba(56, 189, 248, 0.2)',
+      tagBg: 'rgba(56, 189, 248, 0.2)',
+      tagColor: '#e0f2fe',
+      tagText: 'SCIENCE & LABS',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '⚗️',
+      footer: 'ACADEMIC SCIENCE'
+    };
+  }
+  if (g.includes('math')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#2563eb'} 0%, #0f172a 100%)`,
+      borderColor: 'rgba(147, 197, 253, 0.45)',
+      frameColor: 'rgba(147, 197, 253, 0.2)',
+      tagBg: 'rgba(147, 197, 253, 0.2)',
+      tagColor: '#eff6ff',
+      tagText: 'MATHEMATICS',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '📐',
+      footer: 'ADVANCED MATHEMATICS'
+    };
+  }
+  if (g.includes('arts') || g.includes('history')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#9a3412'} 0%, #431407 100%)`,
+      borderColor: 'rgba(251, 146, 60, 0.45)',
+      frameColor: 'rgba(251, 146, 60, 0.2)',
+      tagBg: 'rgba(251, 146, 60, 0.2)',
+      tagColor: '#fff7ed',
+      tagText: 'ARTS & HUMANITIES',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '🏛️',
+      footer: 'HISTORICAL ARCHIVES'
+    };
+  }
+  if (g.includes('commerce') || g.includes('economics')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#047857'} 0%, #064e3b 100%)`,
+      borderColor: 'rgba(110, 231, 183, 0.45)',
+      frameColor: 'rgba(110, 231, 183, 0.2)',
+      tagBg: 'rgba(110, 231, 183, 0.2)',
+      tagColor: '#ecfdf5',
+      tagText: 'COMMERCE & FINANCE',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '📊',
+      footer: 'ECONOMIC RESEARCH'
+    };
+  }
+  if (g.includes('competitive')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#1e1b4b'} 0%, #0f172a 100%)`,
+      borderColor: 'rgba(251, 191, 36, 0.45)',
+      frameColor: 'rgba(251, 191, 36, 0.2)',
+      tagBg: 'rgba(251, 191, 36, 0.2)',
+      tagColor: '#fef3c7',
+      tagText: 'COMPETITIVE EXAM',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '🎯',
+      footer: 'EXAM FOUNDATION'
+    };
+  }
+  if (g.includes('philosophy')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#d97706'} 0%, #451a03 100%)`,
+      borderColor: 'rgba(251, 191, 36, 0.5)',
+      frameColor: 'rgba(251, 191, 36, 0.3)',
+      tagBg: 'rgba(251, 191, 36, 0.2)',
+      tagColor: '#fef3c7',
+      tagText: 'PHILOSOPHY & THOUGHT',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '🕉️',
+      footer: 'PHILOSOPHICAL TEXT'
+    };
+  }
+  if (g.includes('technology') || g.includes('tech')) {
+    return {
+      gradient: `linear-gradient(145deg, ${b.cover || '#0f172a'} 0%, #020617 100%)`,
+      borderColor: 'rgba(45, 212, 191, 0.45)',
+      frameColor: 'rgba(45, 212, 191, 0.2)',
+      tagBg: 'rgba(45, 212, 191, 0.2)',
+      tagColor: '#ccfbf1',
+      tagText: 'COMPUTER SCIENCE',
+      emblemBg: 'rgba(0,0,0,0.3)',
+      icon: b.emoji || '💻',
+      footer: 'TECH EDITIONS'
+    };
+  }
+
+  // 3. Universal Fallback
+  const bg = b.cover || '#1e293b';
+  return {
+    gradient: `linear-gradient(145deg, ${bg} 0%, #0f172a 100%)`,
+    borderColor: 'rgba(255,255,255,0.3)',
+    frameColor: 'rgba(255,255,255,0.18)',
+    tagBg: 'rgba(255,255,255,0.18)',
+    tagColor: '#ffffff',
+    tagText: b.genre ? b.genre.toUpperCase() : 'LIBRARY EDITION',
+    emblemBg: 'rgba(0,0,0,0.3)',
+    icon: b.emoji || '📖',
+    footer: 'ALEXANDRIA LIBRARY'
+  };
+}
+
+// ── Smart Cover URL Resolver ─────────────────────────────────────────
+function getBookCoverUrl(b) {
+  if (b.coverUrl) return b.coverUrl;
+  const t = (b.title || '').toLowerCase();
+  if (t.includes('gita')) return 'covers/gita.png';
+  if (t.includes('constitution') || t.includes('samvidhan')) return 'covers/samvidhan.png';
+  if (t.includes('arthashastra')) return 'covers/arthashastra.png';
+  if (t.includes('ramayana')) return 'covers/ramayana.png';
+  if (t.includes('mahabharata')) return 'covers/mahabharata.png';
+  if (b.isbn && typeof getOpenLibraryCover === 'function') {
+    return getOpenLibraryCover(b.isbn, 'M');
+  }
+  return '';
+}
+
+// ── Render Complete Book Cover Template HTML ─────────────────────────
+function renderBookCoverHTML(b) {
+  const theme = getBookCoverTheme(b);
+  const coverUrl = getBookCoverUrl(b);
+  const titleDisplay = (b.title || 'Untitled Book').replace(/"/g, '&quot;');
+  const authorDisplay = (b.author || 'Alexandria Editorial').replace(/"/g, '&quot;');
+
+  return `
+    <div class="book-cover">
+      <!-- ── Realistic Hardcover Template ─────────────────────── -->
+      <div class="book-template" style="background:${theme.gradient};border:1px solid ${theme.borderColor}">
+        <div class="book-spine-line"></div>
+        <div class="book-gloss-sheen"></div>
+        <div class="book-inner-border" style="border-color:${theme.frameColor}">
+          <div class="book-template-tag" style="background:${theme.tagBg};color:${theme.tagColor}">${theme.tagText}</div>
+          <div class="book-template-emblem" style="background:${theme.emblemBg};border-color:${theme.borderColor}">
+            <span>${theme.icon}</span>
+          </div>
+          <div class="book-template-meta">
+            <div class="book-template-title" title="${titleDisplay}">${titleDisplay}</div>
+            <div class="book-template-author">by ${authorDisplay}</div>
+          </div>
+          <div class="book-template-footer">${theme.footer}</div>
+        </div>
+      </div>
+
+      <!-- ── Real Cover Image (when available, hides on 404 to reveal template) ── -->
+      ${coverUrl ? `
+      <img
+        class="book-cover-img"
+        src="${coverUrl}"
+        alt="${titleDisplay} cover"
+        loading="lazy"
+        onerror="this.style.display='none'"
+        onload="if(this.naturalWidth<=1||this.naturalHeight<=1){this.style.display='none'}"
+      />
+      ` : ''}
+
+      <!-- ── 3D Hardcover Spine Crease & Shadow ── -->
+      <div class="book-spine-shadow"></div>
+
+      <!-- Badges -->
+      ${b.ebook ? '<span class="book-badge-ebook">E-BOOK</span>' : ''}
+      ${b.indian ? '<span class="book-badge-indian">🇮🇳</span>' : ''}
+    </div>
+  `;
+}
+
 // ── Render Books ───────────────────────────────────────────────────
 function renderBooks(list, containerId) {
   const c = document.getElementById(containerId);
   if (!c) return;
-  c.innerHTML = list.map(b => {
-    const coverUrl = b.coverUrl || getOpenLibraryCover(b.isbn, 'M');
-    const bg = b.cover || '#1e293b';
-    return `
-    <div class="book-card" onclick="showBookDetail('${b.id}')">
-      <div class="book-cover" style="background:${bg};position:relative;overflow:hidden">
-        ${coverUrl ? `
-        <img
-          class="book-cover-img"
-          src="${coverUrl}"
-          alt="${b.title} cover"
-          onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80'"
-          style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:inherit;z-index:1"
-        />
-        ` : ''}
-        ${b.ebook ? '<span style="position:absolute;top:6px;right:6px;background:#0d9488;color:white;font-size:9px;padding:2px 5px;border-radius:4px;z-index:2">E-BOOK</span>' : ''}
-        ${b.indian ? '<span style="position:absolute;top:6px;left:6px;font-size:14px;z-index:2">🇮🇳</span>' : ''}
-      </div>
+  const bookIdProp = b => b.id || b._id || '';
+
+  c.innerHTML = list.map(b => `
+    <div class="book-card" onclick="showBookDetail('${bookIdProp(b)}')">
+      ${renderBookCoverHTML(b)}
       <div class="book-info">
-        <div class="book-title">${b.title}</div>
+        <div class="book-title" title="${b.title}">${b.title}</div>
         <div class="book-author">${b.author}</div>
         <div class="book-meta">
           <span class="badge ${statusBadge(b.status)}">${b.status}</span>
@@ -32,8 +409,7 @@ function renderBooks(list, containerId) {
         </div>
       </div>
     </div>
-  `;
-  }).join('');
+  `).join('');
 
   const countEl = document.getElementById('book-count');
   if (countEl && containerId === 'book-grid') {

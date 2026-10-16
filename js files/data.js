@@ -31,7 +31,7 @@ const FALLBACK_BOOKS = [
 
   // 🎨 Class 12th Arts & Humanities
   { id: 'b12', title:'Themes in Indian History (Class 12)', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#9a3412', emoji:'🏛️', rating:4.8, year:2023, isbn:'9788174507203', copies:10, borrowed:1, branch:'East Wing' },
-  { id: 'b13', title:'Indian Constitution at Work & Political Theory', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#4338ca', emoji:'📜', rating:4.7, year:2023, isbn:'9788174507319', copies:8, borrowed:2, branch:'Main Branch' },
+  { id: 'b13', title:'Indian Constitution at Work & Political Theory', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#4338ca', emoji:'📜', rating:4.7, year:2023, isbn:'9788174507319', copies:8, borrowed:2, branch:'Main Branch', coverUrl:'covers/samvidhan.png' },
   { id: 'b14', title:'Fundamentals of Human Geography', author:'NCERT Board', genre:'Class 12th Arts', status:'Available', cover:'#0369a1', emoji:'🗺️', rating:4.6, year:2023, isbn:'9788174507425', copies:7, borrowed:1, branch:'North Branch' },
 
   // 💼 Commerce & Economics
@@ -45,7 +45,7 @@ const FALLBACK_BOOKS = [
 
   // Heritage & General Literature
   { id: 'b20', title:'Wings of Fire', author:'A.P.J. Abdul Kalam', genre:'Biography', status:'Available', cover:'#2a1a0a', emoji:'🔥', rating:4.9, year:1999, isbn:'9788173711466', copies:5, borrowed:2, branch:'Main Branch' },
-  { id: 'b21', title:'Shrimad Bhagavad Gita', author:'Maharishi Ved Vyasa', genre:'Philosophy', status:'Available', cover:'#d97706', emoji:'🕉️', rating:5.0, year:1999, isbn:'9788170540001', copies:10, borrowed:2, branch:'Main Branch' },
+  { id: 'b21', title:'Shrimad Bhagavad Gita', author:'Maharishi Ved Vyasa', genre:'Philosophy', status:'Available', cover:'#d97706', emoji:'🕉️', rating:5.0, year:1999, isbn:'9788170540001', copies:10, borrowed:2, branch:'Main Branch', coverUrl:'covers/gita.png' },
   { id: 'b22', title:'Atomic Habits', author:'James Clear', genre:'Self-Help', status:'Available', cover:'#1a3a1a', emoji:'⚛', rating:4.8, year:2018, isbn:'9780735211292', copies:5, borrowed:3, branch:'Main Branch' },
   { id: 'b23', title:'Clean Code', author:'Robert C. Martin', genre:'Technology', status:'Available', cover:'#1a1a3a', emoji:'💻', rating:4.6, year:2008, isbn:'9780132350884', copies:3, borrowed:1, branch:'Main Branch' }
 ];

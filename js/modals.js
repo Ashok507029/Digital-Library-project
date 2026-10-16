@@ -22,7 +22,13 @@ function showBookDetail(id) {
   const b = BOOKS.find(x => x.id === id || x._id === id) || RECS.find(x => x.id === id || x._id === id);
   if (!b) return;
   const avail = b.copies - (b.borrowed || 0);
-  const coverUrl = b.coverUrl || getOpenLibraryCover(b.isbn, 'L');
+  const coverUrl = (typeof getBookCoverUrl === 'function') ? getBookCoverUrl(b) : (b.coverUrl || getOpenLibraryCover(b.isbn, 'L'));
+  const theme = (typeof getBookCoverTheme === 'function') ? getBookCoverTheme(b) : null;
+  const bgGradient = theme ? theme.gradient : `linear-gradient(135deg, ${b.cover || '#1e293b'}, #0f172a)`;
+  const borderCol = theme ? theme.borderColor : 'rgba(255,255,255,0.2)';
+  const tagTxt = theme ? theme.tagText : (b.genre || 'BOOK');
+  const iconSym = theme ? theme.icon : (b.emoji || '📖');
+  const bid = b.id || b._id || 'book';
 
   // Check current login state and role
   const userRole = localStorage.getItem('user_role') || '';
@@ -54,19 +60,30 @@ function showBookDetail(id) {
 
   showModal(`📖 ${b.title}`, `
     <div style="display:flex;gap:16px;margin-bottom:16px">
-      <div style="width:90px;height:130px;background:${b.cover || '#1e293b'};border-radius:8px;overflow:hidden;flex-shrink:0;position:relative;box-shadow:0 4px 14px rgba(0,0,0,0.4)">
+      <div style="width:105px;height:150px;background:${bgGradient};border-radius:6px;overflow:hidden;flex-shrink:0;position:relative;box-shadow:0 6px 16px rgba(0,0,0,0.5);border:1px solid ${borderCol}">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:12px;background:linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(255,255,255,0.08) 60%, transparent 100%);z-index:4;pointer-events:none"></div>
+        <div style="position:absolute;left:8px;top:0;bottom:0;width:1px;background:rgba(0,0,0,0.3);box-shadow:1px 0 0 rgba(255,255,255,0.1);z-index:3"></div>
+
+        <div id="detail-fallback-${bid}" style="display:flex;flex-direction:column;justify-content:space-between;align-items:center;width:100%;height:100%;position:absolute;top:0;left:0;padding:8px 6px 6px 12px;box-sizing:border-box;text-align:center">
+          <div style="font-size:7.5px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;padding:2px 5px;border-radius:8px;background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:92%">${tagTxt}</div>
+          <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.3);box-shadow:0 2px 6px rgba(0,0,0,0.4)">${iconSym}</div>
+          <div>
+            <div style="font-size:9.5px;font-weight:800;color:#fff;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,0.8)">${b.title}</div>
+            <div style="font-size:7.5px;color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px;margin-top:2px">by ${b.author}</div>
+          </div>
+        </div>
+
+        ${coverUrl ? `
         <img
           src="${coverUrl}"
           alt="${b.title}"
-          style="width:100%;height:100%;object-fit:cover"
-          onerror="this.style.display='none';document.getElementById('detail-fallback-${b.id}').style.display='flex'"
-          onload="if(this.naturalWidth<=1||this.naturalHeight<=1){this.style.display='none';document.getElementById('detail-fallback-${b.id}').style.display='flex'}else{document.getElementById('detail-fallback-${b.id}').style.display='none'}"
+          style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:2"
+          onerror="this.style.display='none'"
+          onload="if(this.naturalWidth<=1||this.naturalHeight<=1){this.style.display='none'}"
         />
-        <div id="detail-fallback-${b.id}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;font-size:32px;position:absolute;top:0;left:0;background:linear-gradient(135deg, ${b.cover || '#1e293b'}, #0f172a);padding:6px;text-align:center;box-sizing:border-box">
-          <div>${b.emoji || '📖'}</div>
-          <div style="font-size:9px;font-weight:700;color:#fff;line-height:1.1;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${b.title}</div>
-        </div>
-        ${b.indian ? '<span style="position:absolute;top:4px;left:4px;font-size:16px;z-index:2">🇮🇳</span>' : ''}
+        ` : ''}
+        ${b.indian ? '<span style="position:absolute;top:4px;left:6px;font-size:14px;z-index:5">🇮🇳</span>' : ''}
+        ${b.ebook ? '<span style="position:absolute;top:4px;right:4px;background:#0d9488;color:white;font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;z-index:5">E-BOOK</span>' : ''}
       </div>
       <div>
         <div style="font-size:20px;font-weight:700;margin-bottom:4px">${b.title}</div>

@@ -278,14 +278,155 @@ body {
 .book-card:hover { border-color: var(--teal); transform: translateY(-2px); }
 
 .book-cover {
-  height: 180px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px 8px 8px 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  background: #0f172a;
+}
+
+.book-template {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 8px 8px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.book-spine-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  width: 1px;
+  background: rgba(0,0,0,0.3);
+  box-shadow: 1px 0 0 rgba(255,255,255,0.12);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.book-spine-shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 14px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 40%, rgba(255,255,255,0.08) 60%, transparent 100%);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.book-gloss-sheen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 45%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.book-inner-border {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 8px 6px 6px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.book-template-tag {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.book-template-emblem {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
-  font-weight: 700;
-  position: relative;
+  font-size: 20px;
+  margin: 3px auto;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+
+.book-template-meta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+}
+
+.book-template-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  padding: 0 2px;
+}
+
+.book-template-author {
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  margin-top: 3px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
+  letter-spacing: 0.2px;
+}
+
+.book-template-footer {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  border-top: 1px solid rgba(255,255,255,0.15);
+  width: 90%;
+  padding-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .book-cover-img {
@@ -296,6 +437,7 @@ body {
   top: 0;
   left: 0;
   border-radius: inherit;
+  z-index: 3;
   transition: transform .3s ease;
 }
 
@@ -303,13 +445,27 @@ body {
   transform: scale(1.04);
 }
 
-.book-cover-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  font-size: 44px;
+.book-badge-ebook {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #0d9488;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.book-badge-indian {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 14px;
+  z-index: 5;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
 }
 
 .book-info    { padding: 10px; }
