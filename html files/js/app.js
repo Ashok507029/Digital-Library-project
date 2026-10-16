@@ -966,6 +966,7 @@ function checkStrength(pw) {
 function openRegisterModal() {
   const modal = document.getElementById('register-modal');
   if (modal) {
+    modal.style.display = 'flex';
     modal.classList.add('open');
     document.getElementById('reg-step-1')?.classList.add('active');
     document.getElementById('reg-step-2')?.classList.remove('active');
@@ -973,7 +974,11 @@ function openRegisterModal() {
 }
 
 function closeRegisterModal() {
-  document.getElementById('register-modal')?.classList.remove('open');
+  const modal = document.getElementById('register-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
 }
 
 function submitRegister(e) {
@@ -1010,6 +1015,7 @@ function goToLogin() {
 function openForgotModal() {
   const modal = document.getElementById('forgot-modal');
   if (modal) {
+    modal.style.display = 'flex';
     modal.classList.add('open');
     document.getElementById('fp-step-1')?.classList.add('active');
     document.getElementById('fp-step-2')?.classList.remove('active');
@@ -1019,7 +1025,11 @@ function openForgotModal() {
 }
 
 function closeForgotModal() {
-  document.getElementById('forgot-modal')?.classList.remove('open');
+  const modal = document.getElementById('forgot-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
 }
 
 function sendOtp(e) {

@@ -578,7 +578,7 @@
   </div>
 
   <!-- Register Modal -->
-  <div class="modal-overlay" id="register-modal">
+  <div class="modal-overlay" id="register-modal" style="display:none" onclick="if(event.target===this)closeRegisterModal()">
     <div class="modal-box">
       <button class="modal-close" onclick="closeRegisterModal()">✕</button>
       <div class="modal-title">📝 Create New Account</div>
@@ -624,7 +624,7 @@
   </div>
 
   <!-- Forgot Password Modal -->
-  <div class="modal-overlay" id="forgot-modal">
+  <div class="modal-overlay" id="forgot-modal" style="display:none" onclick="if(event.target===this)closeForgotModal()">
     <div class="modal-box">
       <button class="modal-close" onclick="closeForgotModal()">✕</button>
 
