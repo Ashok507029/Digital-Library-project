@@ -36,7 +36,6 @@
     </div>
     <nav class="nav" id="main-nav">
       <a class="nav-btn active" href="index.html">Catalog</a>
-      <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Academic Block</a>
       <a class="nav-btn" href="member.html">My Account</a>
       <a class="nav-btn" href="librarian.html">Librarian</a>
       <a class="nav-btn" href="admin.html">Admin</a>
@@ -151,7 +150,6 @@
 
       if (nav) nav.innerHTML = `
         <a class="nav-btn active" href="index.html">Catalog</a>
-        <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Map</a>
         <a class="nav-btn" href="${dashHref}">${dashLink}</a>
         <a class="nav-btn" href="login.html" onclick="localStorage.removeItem('user_role')" style="color:var(--red);font-weight:600">🚪 Logout</a>
       `;
@@ -161,7 +159,6 @@
       if (roleLabel) roleLabel.textContent = 'Guest';
       if (nav) nav.innerHTML = `
         <a class="nav-btn active" href="index.html">Catalog</a>
-        <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Map</a>
         <a class="nav-btn" href="login.html" style="color:var(--teal);font-weight:600">🔐 Login</a>
       `;
     }

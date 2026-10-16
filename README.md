@@ -1,6 +1,6 @@
 # 📚 Alexandria Digital Library
 
-A modern, full-stack Digital Library Management System with an interactive 3D Campus Block Map, multi-role authentication (Member, Librarian, Admin), QR-based borrowing, book reservation, and real-time catalog search.
+A modern, full-stack Digital Library Management System with multi-role authentication (Member, Librarian, Admin), QR-based borrowing, book reservation, and real-time catalog search.
 
 ---
 
@@ -14,7 +14,6 @@ A modern, full-stack Digital Library Management System with an interactive 3D Ca
 ## 🚀 Key Features
 
 - **📖 Dynamic Catalog**: Fast multi-parameter search, genre filters (NCERT, Competitive Exams, Literature, Science), and cover previews.
-- **🏛️ 3D Campus Academic Block**: Interactive Three.js 3D visualization of the academic block and library floors.
 - **👥 Multi-Role Portals**:
   - **Member Portal**: View borrowed books, renewal, reservation, and fines.
   - **Librarian Desk**: Manage book issuance, returns, stock levels, and active readers.
@@ -26,7 +25,7 @@ A modern, full-stack Digital Library Management System with an interactive 3D Ca
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML5, Modern CSS3 (Dark Mode / Custom Glassmorphism Theme), Vanilla JavaScript (ES6+), Three.js (3D Map), QRCode.js.
+- **Frontend**: HTML5, Modern CSS3 (Dark Mode / Custom Glassmorphism Theme), Vanilla JavaScript (ES6+), QRCode.js.
 - **Backend**: Node.js, Express.js, RESTful API.
 - **Database**: MongoDB (Mongoose ODM).
 - **Authentication**: JWT & Role-Based Access Control.
