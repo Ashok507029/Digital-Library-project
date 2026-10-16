@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Registration — Alexandria Digital Library</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-6px); }
+      80%      { transform: translateX(6px); }
+    }
+    .auth-container {
+      max-width: 440px;
+      margin: 50px auto;
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .role-tabs {
+      display: flex;
+      background: var(--navy);
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-tab.active {
+      background: var(--teal);
+      color: white;
+    }
+
+    /* ── Modal Overlay ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      position: relative;
+      animation: popIn 0.2s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none; border: none;
+      color: var(--text3); font-size: 20px;
+      cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: var(--red); }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .modal-sub {
+      font-size: 12px;
+      color: var(--text3);
+      margin-bottom: 20px;
+    }
+    .success-box {
+      display: none;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid #10b981;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #10b981;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .otp-inputs input {
+      width: 48px;
+      height: 52px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--navy);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .otp-inputs input:focus { border-color: var(--teal); }
+    .step { display: none; }
+    .step.active { display: block; }
+    .strength-bar {
+      height: 4px;
+      border-radius: 4px;
+      background: var(--navy);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 0;
+    }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 38px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#0d9488"/>
+        <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="10" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="13" x2="18" y2="13" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="16" x2="15" y2="16" stroke="white" stroke-width="1.2"/>
+      </svg>
+      Alexandria
+    </div>
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">Catalog</a>
+      <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Map</a>
+      <a class="nav-btn active" href="login.html" style="color:var(--teal);font-weight:600">👤 Member Login</a>
+      <a class="nav-btn" href="staff-login.html">🛡 Staff Portal</a>
+    </nav>
+  </header>
+
+  <!-- ── Auth Form ────────────────────────────────────────── -->
+  <div class="auth-container">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:36px;margin-bottom:8px">📖</div>
+      <h2 style="margin-bottom:6px;font-size:22px;color:var(--text)">Member Sign In</h2>
+      <p style="font-size:12px;color:var(--text3)">Access your Digital Library account, borrowed books & e-books</p>
+    </div>
+
+    <form id="auth-form" onsubmit="handleAuth(event)">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" id="auth-email" placeholder="e.g. john.doe@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="auth-password" placeholder="••••••••" required>
+          <button type="button" class="pw-toggle" onclick="togglePw('auth-password', this)">👁</button>
+        </div>
+      </div>
+
+      <!-- Forgot Password link -->
+      <div style="text-align:right;margin-top:-8px;margin-bottom:14px">
+        <a href="#" style="font-size:12px;color:var(--teal);text-decoration:none" onclick="openForgotModal()">Forgot Password?</a>
+      </div>
+
+      <button class="btn btn-primary" type="submit" style="width:100%;padding:12px">Sign In to My Library →</button>
+    </form>
+
+    <!-- 1-Click Member Bypass Access Button -->
+    <div style="margin-top:14px;">
+      <button class="btn" style="width:100%;padding:11px;background:rgba(16,185,129,0.15);border:1px solid #10b981;color:#10b981;font-weight:700;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px" onclick="quickLogin('member')">
+        ⚡ 1-Click Member Bypass Access
+      </button>
+    </div>
+
+    <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--text3)">
+      Need an account? <a href="#" style="color:var(--teal);text-decoration:none;font-weight:600" onclick="openRegisterModal()">Register Free Member Account</a>
+    </div>
+
+    <!-- Staff Portal Link -->
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+      <a href="staff-login.html" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px">
+        🛡 Library Staff & Admin Portal →
+      </a>
+    </div>
+  </div>
+
+  <div class="notif" id="notif-container"></div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     REGISTER NEW MEMBER MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="register-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+    <div class="modal-title">📝 Create New Account</div>
+    <div class="modal-sub">Join Alexandria Public Library — 100% Free!</div>
+
+    <!-- Step 1: Fill Details -->
+    <div class="step active" id="reg-step-1">
+      <form onsubmit="submitRegister(event)">
+
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" type="text" id="reg-name" placeholder="e.g. Rahul Sharma" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="e.g. rahul@gmail.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input class="form-input" type="tel" id="reg-phone" placeholder="e.g. 9876543210" pattern="[0-9]{10}" maxlength="10" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <div class="pw-wrap">
+            <input class="form-input" type="password" id="reg-password" placeholder="Min 8 characters" minlength="8" required oninput="checkStrength(this.value)">
+            <button type="button" class="pw-toggle" onclick="togglePw('reg-password', this)">👁</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px" id="strength-label"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password *</label>
+          <input class="form-input" type="password" id="reg-confirm" placeholder="Re-enter password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:4px">Create My Account →</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Success -->
+    <div class="step" id="reg-step-2">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:52px;margin-bottom:12px">🎉</div>
+        <div style="font-size:16px;font-weight:700;color:var(--teal);margin-bottom:8px">Account Created Successfully!</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px">Welcome to Alexandria Public Library!</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:20px">You now have access to borrow books for <strong>7 days FREE</strong>.</div>
+        <div id="reg-member-id" style="background:var(--navy);border-radius:8px;padding:12px;font-family:monospace;font-size:14px;color:var(--teal);margin-bottom:20px"></div>
+        <button class="btn btn-primary" style="width:100%" onclick="goToLogin()">Proceed to Login →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     FORGOT PASSWORD MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="forgot-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeForgotModal()">✕</button>
+
+    <!-- Step 1: Enter Email -->
+    <div class="step active" id="fp-step-1">
+      <div class="modal-title">🔑 Forgot Password?</div>
+      <div class="modal-sub">Enter your registered email. We'll send a reset OTP.</div>
+      <form onsubmit="sendOtp(event)">
+        <div class="form-group">
+          <label class="form-label">Registered Email Address</label>
+          <input class="form-input" type="email" id="fp-email" placeholder="e.g. rahul@gmail.com" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%">Send OTP →</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Enter OTP -->
+    <div class="step" id="fp-step-2">
+      <div class="modal-title">📨 Enter OTP</div>
+      <div class="modal-sub" id="fp-otp-label">OTP sent to your email.</div>
+      <div class="otp-inputs">
+        <input type="text" maxlength="1" id="otp-1" oninput="otpNext(this,'otp-2')" onkeydown="otpBack(event,this,'')">
+        <input type="text" maxlength="1" id="otp-2" oninput="otpNext(this,'otp-3')" onkeydown="otpBack(event,this,'otp-1')">
+        <input type="text" maxlength="1" id="otp-3" oninput="otpNext(this,'otp-4')" onkeydown="otpBack(event,this,'otp-2')">
+        <input type="text" maxlength="1" id="otp-4" oninput="otpNext(this,'otp-5')" onkeydown="otpBack(event,this,'otp-3')">
+        <input type="text" maxlength="1" id="otp-5" oninput="otpNext(this,'otp-6')" onkeydown="otpBack(event,this,'otp-4')">
+        <input type="text" maxlength="1" id="otp-6" oninput="otpNext(this,'')"      onkeydown="otpBack(event,this,'otp-5')">
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:16px">
+        Demo OTP: <strong style="color:var(--teal)" id="demo-otp-show"></strong>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="verifyOtp()">Verify OTP →</button>
+      <div style="text-align:center;margin-top:12px">
+        <a href="#" style="font-size:12px;color:var(--text3)" onclick="fpStep(1)">← Back</a>
+        &nbsp;|&nbsp;
+        <a href="#" style="font-size:12px;color:var(--teal)" onclick="resendOtp()">Resend OTP</a>
+      </div>
+    </div>
+
+    <!-- Step 3: New Password -->
+    <div class="step" id="fp-step-3">
+      <div class="modal-title">🔒 Set New Password</div>
+      <div class="modal-sub">Choose a strong new password.</div>
+      <form onsubmit="resetPassword(event)">
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" type="password" id="fp-new-pw" placeholder="Min 8 characters" minlength="8" required oninput="checkStrength(this.value)">
+            <button type="button" class="pw-toggle" onclick="togglePw('fp-new-pw', this)">👁</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px" id="strength-label"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input class="form-input" type="password" id="fp-confirm-pw" placeholder="Re-enter password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%">Reset Password</button>
+      </form>
+    </div>
+
+    <!-- Step 4: Done -->
+    <div class="step" id="fp-step-4">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:52px;margin-bottom:12px">✅</div>
+        <div style="font-size:16px;font-weight:700;color:var(--teal);margin-bottom:8px">Password Reset Successful!</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Your password has been updated. You can now sign in with your new password.</div>
+        <button class="btn btn-primary" style="width:100%" onclick="closeForgotModal()">Back to Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ─────────────────────────────────────────── -->
+<script src="js/data.js"></script>
+<script src="js/modals.js"></script>
+<script>
+  let selectedRole = 'member';
+  let resetToken   = '';   // JWT token returned after OTP verify
+
+  // ── Backend API base URL ──
+  const API = 'http://localhost:3000/api';
+
+  /* ── Role Tab ── */
+  function selectRole(role, el) {
+    selectedRole = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    // Clear fields on role switch
+    document.getElementById('auth-email').value    = '';
+    document.getElementById('auth-password').value = '';
+  }
+
+  /* ── Demo Credentials ── */
+  const DEMO_CREDENTIALS = {
+    member:    { email: 'john.doe@email.com',       password: 'password123', name: 'John Doe' },
+    librarian: { email: 'librarian@alexandria.lib', password: 'lib123',      name: 'Librarian Staff' },
+    admin:     { email: 'admin@alexandria.lib',      password: 'admin123',    name: 'Admin User' },
+  };
+
+  /* ── Quick Login (1-click demo, no password check) ── */
+  function quickLogin(role) {
+    const cred = DEMO_CREDENTIALS[role];
+    doLogin(role, cred.email, cred.name);
+  }
+
+  /* ── Do the actual login redirect ── */
+  function doLogin(role, email, name) {
+    localStorage.setItem('user_role',  role);
+    localStorage.setItem('user_email', email);
+    localStorage.setItem('user_name',  name);
+    notify(`✅ Logged in as ${name}!`, 'success');
+    setTimeout(() => {
+      if (role==='admin')          window.location.href='admin.html';
+      else if (role==='librarian') window.location.href='librarian.html';
+      else                         window.location.href='index.html';
+    }, 900);
+  }
+
+  /* ── Login Form Submit ── */
+  async function handleAuth(event) {
+    event.preventDefault();
+    const email    = document.getElementById('auth-email').value.trim().toLowerCase();
+    const password = document.getElementById('auth-password').value;
+    const role     = selectedRole;
+    const btn      = document.querySelector('#auth-form button[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+
+    // 1) Always try demo credentials first (offline)
+    const cred = DEMO_CREDENTIALS[role];
+    if (email === cred.email.toLowerCase() && password === cred.password) {
+      doLogin(role, cred.email, cred.name);
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign In to Library'; }
+      return;
+    }
+
+    // 2) Try backend API (for all registered members)
+    try {
+      const res  = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        doLogin(data.role || role, data.email, data.name);
+        return;
+      }
+      // Wrong password from backend
+      shakeForm();
+      notify(`❌ ${data.message}`, 'error');
+    } catch(e) {
+      // Backend not running — fallback to localStorage
+      const members = JSON.parse(localStorage.getItem('registered_members') || '[]');
+      const found   = members.find(m => m.email.toLowerCase() === email && m.password === password);
+      if (found) { doLogin(found.role || 'member', found.email, found.name); return; }
+      shakeForm();
+      notify('❌ Incorrect email or password.', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign In to Library'; }
+    }
+  }
+
+  /* ── Shake animation on wrong password ── */
+  function shakeForm() {
+    const form = document.getElementById('auth-form');
+    form.style.animation = 'none';
+    form.offsetHeight; // reflow
+    form.style.animation = 'shake 0.4s ease';
+    setTimeout(() => form.style.animation = '', 500);
+  }
+
+  /* ── Password Visibility Toggle ── */
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+    else                          { inp.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  /* ── Password Strength ── */
+  function checkStrength(pw) {
+    const fill  = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+    if (!fill) return;
+    let score = 0;
+    if (pw.length >= 8)             score++;
+    if (/[A-Z]/.test(pw))           score++;
+    if (/[0-9]/.test(pw))           score++;
+    if (/[^A-Za-z0-9]/.test(pw))   score++;
+    const map = [
+      { pct:'0%',   color:'',           text:'' },
+      { pct:'25%',  color:'#ef4444',    text:'Weak' },
+      { pct:'50%',  color:'#f97316',    text:'Fair' },
+      { pct:'75%',  color:'#eab308',    text:'Good' },
+      { pct:'100%', color:'#10b981',    text:'Strong 💪' },
+    ];
+    fill.style.width      = map[score].pct;
+    fill.style.background = map[score].color;
+    label.textContent     = map[score].text;
+  }
+
+  /* ════════════════════════════════════════════
+     REGISTER MODAL
+  ════════════════════════════════════════════ */
+  function toggleRegisterRole(role) {
+    const group = document.getElementById('passcode-group');
+    const input = document.getElementById('reg-passcode');
+    if (role === 'librarian' || role === 'admin') {
+      if (group) group.style.display = 'block';
+      if (input) input.required = true;
+    } else {
+      if (group) group.style.display = 'none';
+      if (input) { input.required = false; input.value = ''; }
+    }
+  }
+
+  function openRegisterModal() {
+    document.getElementById('register-modal').classList.add('open');
+    document.getElementById('reg-step-1').classList.add('active');
+    document.getElementById('reg-step-2').classList.remove('active');
+
+    ['reg-name','reg-email','reg-phone','reg-password','reg-confirm']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  }
+  function closeRegisterModal() {
+    document.getElementById('register-modal').classList.remove('open');
+  }
+
+  async function submitRegister(event) {
+    event.preventDefault();
+    const name    = document.getElementById('reg-name').value.trim();
+    const email   = document.getElementById('reg-email').value.trim();
+    const phone   = document.getElementById('reg-phone').value.trim();
+    const pw      = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const btn     = event.submitter;
+
+    if (pw !== confirm) { notify('❌ Passwords do not match!', 'error'); return; }
+    if (phone.length !== 10) { notify('❌ Enter valid 10-digit phone number!', 'error'); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
+
+    // First clear any stale localStorage entry for this email
+    let members = JSON.parse(localStorage.getItem('registered_members') || '[]');
+    members = members.filter(m => m.email.toLowerCase() !== email.toLowerCase());
+    localStorage.setItem('registered_members', JSON.stringify(members));
+
+    try {
+      // Try backend API
+      const res  = await fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password: pw, role: 'member' })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+
+      // Also save to localStorage as backup
+      members.push({ id: data.memberId, name, email, phone, password: pw, role: 'member', joinDate: new Date().toLocaleDateString('en-IN') });
+      localStorage.setItem('registered_members', JSON.stringify(members));
+
+      document.getElementById('reg-member-id').textContent = `Member ID: #${data.memberId} | Name: ${name}`;
+      document.getElementById('reg-step-1').classList.remove('active');
+      document.getElementById('reg-step-2').classList.add('active');
+
+    } catch(e) {
+      if (members.find(m => m.email.toLowerCase() === email.toLowerCase())) {
+        notify('❌ This email is already registered!', 'error'); return;
+      }
+      const memberId = 'M' + Date.now().toString().slice(-6);
+      members.push({ id: memberId, name, email, phone, password: pw, role: 'member', joinDate: new Date().toLocaleDateString('en-IN') });
+      localStorage.setItem('registered_members', JSON.stringify(members));
+      document.getElementById('reg-member-id').textContent = `Member ID: #${memberId} | Name: ${name}`;
+      document.getElementById('reg-step-1').classList.remove('active');
+      document.getElementById('reg-step-2').classList.add('active');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Create My Account →'; }
+    }
+  }
+
+  function goToLogin() {
+    closeRegisterModal();
+    notify('Account created! Please sign in.', 'success');
+  }
+
+  /* ════════════════════════════════════════════
+     FORGOT PASSWORD MODAL
+  ════════════════════════════════════════════ */
+  function openForgotModal() {
+    fpStep(1);
+    document.getElementById('forgot-modal').classList.add('open');
+    document.getElementById('fp-email').value = '';
+  }
+  function closeForgotModal() {
+    document.getElementById('forgot-modal').classList.remove('open');
+  }
+
+  function fpStep(n) {
+    for (let i=1;i<=4;i++) {
+      const s = document.getElementById(`fp-step-${i}`);
+      if(s) s.classList.toggle('active', i===n);
+    }
+  }
+
+  async function sendOtp(event) {
+    event.preventDefault();
+    const email = document.getElementById('fp-email').value.trim();
+    const btn   = event.submitter || event.target.querySelector('button[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+    try {
+      const res  = await fetch(`${API}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+
+      document.getElementById('fp-otp-label').textContent = `OTP sent to ${email}`;
+      // Hide demo OTP row (real OTP is in email now)
+      const demoRow = document.getElementById('demo-otp-show');
+      if (demoRow) demoRow.closest('div').style.display = 'none';
+      ['otp-1','otp-2','otp-3','otp-4','otp-5','otp-6'].forEach(id => document.getElementById(id).value='');
+      fpStep(2);
+      notify(`✅ OTP sent to ${email}! Check your inbox.`, 'success');
+    } catch(e) {
+      notify('❌ Server not reachable. Is backend running?', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Send OTP →'; }
+    }
+  }
+
+  async function resendOtp() {
+    const email = document.getElementById('fp-email').value.trim();
+    try {
+      const res  = await fetch(`${API}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+      ['otp-1','otp-2','otp-3','otp-4','otp-5','otp-6'].forEach(id => document.getElementById(id).value='');
+      notify('✅ New OTP sent to your email!', 'success');
+    } catch(e) {
+      notify('❌ Server not reachable.', 'error');
+    }
+  }
+
+  function otpNext(el, nextId) {
+    if (el.value && nextId) document.getElementById(nextId).focus();
+  }
+  function otpBack(e, el, prevId) {
+    if (e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
+  }
+
+  async function verifyOtp() {
+    const email   = document.getElementById('fp-email').value.trim();
+    const entered = ['otp-1','otp-2','otp-3','otp-4','otp-5','otp-6']
+      .map(id => document.getElementById(id).value).join('');
+
+    try {
+      const res  = await fetch(`${API}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: entered })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+      resetToken = data.resetToken;  // save JWT for next step
+      fpStep(3);
+      notify('✅ OTP verified!', 'success');
+    } catch(e) {
+      notify('❌ Server not reachable.', 'error');
+    }
+  }
+
+  async function resetPassword(event) {
+    event.preventDefault();
+    const pw  = document.getElementById('fp-new-pw').value;
+    const cpw = document.getElementById('fp-confirm-pw').value;
+    if (pw !== cpw) { notify('❌ Passwords do not match!', 'error'); return; }
+
+    try {
+      const res  = await fetch(`${API}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resetToken, newPassword: pw })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+      resetToken = '';
+      fpStep(4);
+    } catch(e) {
+      notify('❌ Server not reachable.', 'error');
+    }
+  }
+
+  /* ── Close modal on overlay click ── */
+  ['register-modal','forgot-modal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  /* ── notify helper (if modals.js not loaded) ── */
+  function notify(msg, type='info') {
+    const c = document.getElementById('notif-container');
+    if (!c) return;
+    const n = document.createElement('div');
+    n.className = `notif-item notif-${type}`;
+    n.textContent = msg;
+    c.appendChild(n);
+    setTimeout(() => n.remove(), 3000);
+  }
+</script>
+</body>
+</html>

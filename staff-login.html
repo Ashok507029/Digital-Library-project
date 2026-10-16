@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff & Admin Portal — Alexandria Digital Library</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-6px); }
+      80%      { transform: translateX(6px); }
+    }
+    .auth-container {
+      max-width: 440px;
+      margin: 50px auto;
+      background: var(--navy2);
+      border: 1px solid var(--teal);
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 16px 48px rgba(13,148,136,0.15);
+    }
+    .role-tabs {
+      display: flex;
+      background: var(--navy);
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-tab.active {
+      background: linear-gradient(135deg, var(--teal), #0891b2);
+      color: white;
+    }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 38px; }
+    .pw-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#0d9488"/>
+        <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="10" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="13" x2="18" y2="13" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="16" x2="15" y2="16" stroke="white" stroke-width="1.2"/>
+      </svg>
+      Alexandria
+    </div>
+    <nav class="nav">
+      <a class="nav-btn" href="index.html">Catalog</a>
+      <a class="nav-btn" href="login.html">👤 Member Login</a>
+      <a class="nav-btn active" href="staff-login.html" style="color:var(--teal);font-weight:600">🛡 Staff Portal</a>
+    </nav>
+  </header>
+
+  <!-- ── Auth Form ────────────────────────────────────────── -->
+  <div class="auth-container">
+    <div style="text-align:center;margin-bottom:20px">
+      <span class="badge badge-teal" style="font-size:11px;padding:4px 10px;margin-bottom:8px;display:inline-block">🛡 AUTHORIZED PERSONNEL ONLY</span>
+      <h2 style="margin-bottom:6px;font-size:22px;color:var(--text)">Library Staff Portal</h2>
+      <p style="font-size:12px;color:var(--text3)">Sign in to access Librarian Desk or System Administration</p>
+    </div>
+
+    <!-- Staff Role Tabs -->
+    <div class="role-tabs">
+      <div class="role-tab active" id="tab-librarian" onclick="selectStaffRole('librarian')">📚 Librarian Staff</div>
+      <div class="role-tab" id="tab-admin" onclick="selectStaffRole('admin')">👑 Administrator</div>
+    </div>
+
+    <form id="staff-auth-form" onsubmit="handleStaffAuth(event)">
+      <div class="form-group">
+        <label class="form-label" id="email-label">Librarian Email / Staff ID</label>
+        <input class="form-input" type="email" id="staff-email" placeholder="e.g. librarian@alexandria.lib" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="staff-password" placeholder="••••••••" required>
+          <button type="button" class="pw-toggle" onclick="togglePw('staff-password', this)">👁</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit" style="width:100%;padding:12px;margin-top:10px" id="staff-submit-btn">Sign In to Staff Desk →</button>
+    </form>
+
+    <div style="margin-top:20px;text-align:center;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:16px">
+      Need a Staff/Admin account? <a href="#" style="color:var(--teal);text-decoration:none;font-weight:600" onclick="openStaffRegisterModal()">Register Staff Account</a>
+    </div>
+
+    <!-- Quick Demo Logins -->
+    <div style="margin-top:16px;text-align:center">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">⚡ Quick 1-Click Demo Login:</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-sm btn-ghost" onclick="quickStaffLogin('librarian')">📚 Demo Librarian</button>
+        <button class="btn btn-sm btn-ghost" onclick="quickStaffLogin('admin')">👑 Demo Admin</button>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;text-align:center">
+      <a href="login.html" style="font-size:12px;color:var(--text3);text-decoration:none">← Return to Public Member Login</a>
+    </div>
+  </div>
+
+  <div class="notif" id="notif-container"></div>
+
+</div>
+
+<!-- Staff Register Modal -->
+<div class="modal-overlay" id="staff-register-modal" style="display:none" onclick="if(event.target===this)closeStaffRegisterModal()">
+  <div class="modal-box" style="max-width:460px;background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:28px;margin:50px auto;position:relative">
+    <button class="modal-close" style="position:absolute;right:16px;top:16px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer" onclick="closeStaffRegisterModal()">✕</button>
+    <div class="modal-title" style="font-size:18px;font-weight:700;margin-bottom:4px">🛡 Create Staff / Admin Account</div>
+    <div class="modal-sub" style="font-size:12px;color:var(--text3);margin-bottom:16px">Security Passcode required for verification</div>
+
+    <form onsubmit="submitStaffRegister(event)">
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label" style="font-size:12px;color:var(--text2)">Staff Role *</label>
+        <select class="form-select" id="staff-reg-role" style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px" onchange="updatePasscodeHint(this.value)">
+          <option value="librarian">📚 Librarian Staff</option>
+          <option value="admin">👑 System Administrator</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label" style="font-size:12px;color:var(--amber)">Security Passcode *</label>
+        <input class="form-input" type="password" id="staff-reg-passcode" placeholder="Enter security passcode" required style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px">
+        <div style="font-size:11px;color:var(--teal);margin-top:4px" id="passcode-hint">💡 Librarian Passcode: <strong>LIB2026</strong></div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label" style="font-size:12px;color:var(--text2)">Full Name *</label>
+        <input class="form-input" type="text" id="staff-reg-name" placeholder="e.g. Vikram Singh" required style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label" style="font-size:12px;color:var(--text2)">Official Email *</label>
+        <input class="form-input" type="email" id="staff-reg-email" placeholder="e.g. vikram@alexandria.lib" required style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label" style="font-size:12px;color:var(--text2)">Phone Number *</label>
+        <input class="form-input" type="tel" id="staff-reg-phone" placeholder="10-digit phone" pattern="[0-9]{10}" maxlength="10" required style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px">
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label" style="font-size:12px;color:var(--text2)">Password *</label>
+        <input class="form-input" type="password" id="staff-reg-password" placeholder="Min 8 characters" minlength="8" required style="width:100%;padding:10px;background:var(--navy);color:var(--text);border:1px solid var(--border);border-radius:8px">
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;padding:12px">Create Staff Account →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let selectedStaffRole = 'librarian';
+  const API = 'http://localhost:3000/api';
+
+  const DEMO_CREDENTIALS = {
+    librarian: { email: 'librarian@alexandria.lib', password: 'lib123',   name: 'Librarian Staff' },
+    admin:     { email: 'admin@alexandria.lib',     password: 'admin123', name: 'Admin User' },
+  };
+
+  function selectStaffRole(role) {
+    selectedStaffRole = role;
+    document.getElementById('tab-librarian').classList.toggle('active', role === 'librarian');
+    document.getElementById('tab-admin').classList.toggle('active', role === 'admin');
+    document.getElementById('email-label').textContent = role === 'admin' ? 'Admin Email / Username' : 'Librarian Email / Staff ID';
+    document.getElementById('staff-submit-btn').textContent = role === 'admin' ? 'Sign In to Admin Panel →' : 'Sign In to Librarian Desk →';
+    document.getElementById('staff-email').value = '';
+    document.getElementById('staff-password').value = '';
+  }
+
+  function quickStaffLogin(role) {
+    const cred = DEMO_CREDENTIALS[role];
+    doLogin(role, cred.email, cred.name);
+  }
+
+  function doLogin(role, email, name) {
+    localStorage.setItem('user_role',  role);
+    localStorage.setItem('user_email', email);
+    localStorage.setItem('user_name',  name);
+    notify(`✅ Logged in as ${name}!`, 'success');
+    setTimeout(() => {
+      if (role === 'admin')          window.location.href = 'admin.html';
+      else if (role === 'librarian') window.location.href = 'librarian.html';
+      else                           window.location.href = 'index.html';
+    }, 800);
+  }
+
+  async function handleStaffAuth(event) {
+    event.preventDefault();
+    const email    = document.getElementById('staff-email').value.trim().toLowerCase();
+    const password = document.getElementById('staff-password').value;
+    const role     = selectedStaffRole;
+    const btn      = document.getElementById('staff-submit-btn');
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Authenticating…'; }
+
+    const cred = DEMO_CREDENTIALS[role];
+    if (email === cred.email.toLowerCase() && password === cred.password) {
+      doLogin(role, cred.email, cred.name);
+      return;
+    }
+
+    try {
+      const res  = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        doLogin(data.role || role, data.email, data.name);
+        return;
+      }
+      notify(`❌ ${data.message}`, 'error');
+    } catch(e) {
+      const members = JSON.parse(localStorage.getItem('registered_members') || '[]');
+      const found   = members.find(m => m.email.toLowerCase() === email && m.password === password);
+      if (found) { doLogin(found.role || role, found.email, found.name); return; }
+      notify('❌ Incorrect email or password.', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = role === 'admin' ? 'Sign In to Admin Panel →' : 'Sign In to Librarian Desk →'; }
+    }
+  }
+
+  function openStaffRegisterModal() {
+    document.getElementById('staff-register-modal').style.display = 'block';
+    updatePasscodeHint(document.getElementById('staff-reg-role').value);
+  }
+  function closeStaffRegisterModal() {
+    document.getElementById('staff-register-modal').style.display = 'none';
+  }
+
+  function updatePasscodeHint(role) {
+    const hint = document.getElementById('passcode-hint');
+    if (role === 'admin') hint.innerHTML = '💡 Admin Passcode: <strong>ADMIN2026</strong>';
+    else hint.innerHTML = '💡 Librarian Passcode: <strong>LIB2026</strong>';
+  }
+
+  async function submitStaffRegister(event) {
+    event.preventDefault();
+    const role     = document.getElementById('staff-reg-role').value;
+    const passcode = document.getElementById('staff-reg-passcode').value.trim();
+    const name     = document.getElementById('staff-reg-name').value.trim();
+    const email    = document.getElementById('staff-reg-email').value.trim();
+    const phone    = document.getElementById('staff-reg-phone').value.trim();
+    const pw       = document.getElementById('staff-reg-password').value;
+
+    try {
+      const res  = await fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password: pw, role, passcode })
+      });
+      const data = await res.json();
+      if (!res.ok) { notify(`❌ ${data.message}`, 'error'); return; }
+
+      closeStaffRegisterModal();
+      notify(`🎉 Staff Account created for ${name}! Please sign in.`, 'success');
+      selectStaffRole(role);
+      document.getElementById('staff-email').value = email;
+    } catch(e) {
+      if (role === 'librarian' && passcode !== 'LIB2026') { notify('❌ Invalid Librarian Passcode!', 'error'); return; }
+      if (role === 'admin' && passcode !== 'ADMIN2026') { notify('❌ Invalid Admin Passcode!', 'error'); return; }
+
+      let members = JSON.parse(localStorage.getItem('registered_members') || '[]');
+      members.push({ id: 'M'+Date.now().toString().slice(-6), name, email, phone, password: pw, role });
+      localStorage.setItem('registered_members', JSON.stringify(members));
+
+      closeStaffRegisterModal();
+      notify(`🎉 Staff Account created for ${name}!`, 'success');
+      selectStaffRole(role);
+      document.getElementById('staff-email').value = email;
+    }
+  }
+
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁'; }
+  }
+
+  function notify(msg, type='info') {
+    const c = document.getElementById('notif-container');
+    if (!c) return;
+    const n = document.createElement('div');
+    n.className = `notif-item notif-${type}`;
+    n.textContent = msg;
+    c.appendChild(n);
+    setTimeout(() => n.remove(), 3000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusTools - Academic Grade & Attendance Suite</title>
+  <meta name="description" content="Handcrafted academic calculator suite for college students. Calculate SGPA, CGPA to percentage, attendance percentage, and smart bunk predictor.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-name">CampusTools</h1>
+          <p class="brand-tag">Student Grade & Attendance Suite</p>
+        </div>
+      </div>
+      <div class="user-profile-badge">
+        <span class="avatar-dot"></span>
+        <span>Vikas • B.Tech CSE (Sem 5)</span>
+      </div>
+    </header>
+
+    <!-- Navigation Pills -->
+    <div class="pills-nav-wrapper">
+      <nav class="pills-nav">
+        <button class="pill-btn active" data-tab="tab-sgpa">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          CGPA / SGPA
+        </button>
+        <button class="pill-btn" data-tab="tab-percentage">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          Percentage
+        </button>
+        <button class="pill-btn" data-tab="tab-attendance">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Attendance Predictor
+        </button>
+      </nav>
+
+      <button class="btn btn-secondary" id="copy-summary-btn" style="font-size: 0.8rem;">
+        📋 Copy Summary for WhatsApp
+      </button>
+    </div>
+
+    <!-- TAB 1: SGPA & TARGET PREDICTOR -->
+    <div id="tab-sgpa" class="tab-content active">
+      <div class="dashboard-grid">
+        <!-- Subject Input Table -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">SGPA Semester Worksheets</h2>
+              <p class="panel-desc">Enter course credits & letter grades for credit-weighted GPA calculation.</p>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th style="width: 45%;">Course Title</th>
+                  <th style="width: 20%;">Credit Units</th>
+                  <th style="width: 25%;">Grade Received</th>
+                  <th style="width: 10%; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="subject-rows">
+                <!-- Rows injected dynamically via app.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="btn-flex">
+            <button type="button" class="btn btn-secondary" id="add-subject-btn">+ Add Course</button>
+            <button type="button" class="btn btn-primary" id="calc-sgpa-btn">Calculate SGPA</button>
+            <button type="button" class="btn btn-secondary" id="reset-sgpa-btn">Reset</button>
+          </div>
+        </div>
+
+        <!-- Metric Results & Target Predictor -->
+        <div>
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3 class="panel-title">Semester Performance</h3>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Current SGPA</div>
+              <div class="kpi-num" id="sgpa-result">0.00</div>
+              <span class="status-tag status-emerald" id="sgpa-badge">Outstanding</span>
+            </div>
+
+            <div class="info-banner" style="margin-bottom: 1rem;">
+              Total Enrolled Credits: <strong id="total-credits-val">16</strong>
+            </div>
+          </div>
+
+          <!-- Target CGPA Predictor Card -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3 class="panel-title">Target CGPA Predictor</h3>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Completed Semesters</label>
+              <input type="number" class="input-control" id="target-past-sems" value="4" min="1" max="10">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Current Cumulative CGPA</label>
+              <input type="number" class="input-control" id="target-current-cgpa" value="7.8" step="0.1" min="0" max="10">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Desired Target CGPA</label>
+              <input type="number" class="input-control" id="target-desired-cgpa" value="8.0" step="0.1" min="0" max="10">
+            </div>
+            <button type="button" class="btn btn-secondary" id="calc-target-btn" style="width: 100%;">Predict Next Sem Required SGPA</button>
+            <div id="target-result-box" class="info-banner" style="margin-top: 0.85rem; display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PERCENTAGE CALCULATOR -->
+    <div id="tab-percentage" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title">CGPA to Percentage Converter</h2>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Enter Cumulative CGPA</label>
+            <input type="number" class="input-control" id="cgpa-val-input" value="8.2" step="0.01" min="0" max="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">University Conversion Scale</label>
+            <select class="input-control" id="cgpa-formula-select">
+              <option value="sub075">AICTE Standard: (CGPA - 0.75) × 10</option>
+              <option value="mult95">CBSE Standard: CGPA × 9.5</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary" id="calc-cgpa-percent-btn">Convert to Percentage</button>
+          
+          <div class="kpi-card" style="margin-top: 1.25rem;">
+            <div class="kpi-label">Calculated Percentage</div>
+            <div class="kpi-num" id="cgpa-percent-result">74.50%</div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title">Marks Percentage Calculator</h2>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Marks Secured</label>
+            <input type="number" class="input-control" id="marks-obtained-input" value="465" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Max Marks</label>
+            <input type="number" class="input-control" id="total-marks-input" value="600" min="1">
+          </div>
+          <button type="button" class="btn btn-primary" id="calc-marks-percent-btn">Calculate Percentage</button>
+
+          <div class="kpi-card" style="margin-top: 1.25rem;">
+            <div class="kpi-label">Total Percentage</div>
+            <div class="kpi-num" id="marks-percent-result">77.50%</div>
+            <span class="status-tag status-emerald" id="division-badge">First Class with Distinction</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ATTENDANCE & BUNK PREDICTOR -->
+    <div id="tab-attendance" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title">Lecture Attendance Log</h2>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Conducted Lectures</label>
+            <input type="number" class="input-control" id="total-classes-input" value="54" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lectures Attended</label>
+            <input type="number" class="input-control" id="attended-classes-input" value="45" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Minimum Required Attendance (%)</label>
+            <input type="number" class="input-control" id="target-threshold-input" value="75" min="50" max="100">
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title" id="bunk-status-title">Attendance Gauge</h2>
+          </div>
+
+          <div class="metric-ring">
+            <svg class="ring-svg" viewBox="0 0 160 160">
+              <circle class="ring-bg" cx="80" cy="80" r="68"></circle>
+              <circle class="ring-fill" id="gauge-fill" cx="80" cy="80" r="68" stroke-dasharray="427.25" stroke-dashoffset="70"></circle>
+            </svg>
+            <div class="ring-content">
+              <div class="ring-val" id="attendance-percentage-text">83.3%</div>
+              <div class="ring-sub">Attendance Rate</div>
+            </div>
+          </div>
+
+          <div class="info-banner">
+            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem;" id="bunk-insight-val">Safe Zone: You can bunk 6 lectures</div>
+            <p id="bunk-insight-text">Your attendance will stay above 75% even if you skip the next 6 lectures.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="panel-card" style="margin-top: 1.5rem;">
+      <div class="panel-header">
+        <h3 class="panel-title">Recent Calculations Log</h3>
+        <button type="button" class="btn btn-secondary" id="clear-history-btn" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">Clear History</button>
+      </div>
+      <ul class="history-items" id="history-list">
+        <!-- Injected via app.js -->
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Handcrafted by Vikas • B.Tech CSE • Built for College Students</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

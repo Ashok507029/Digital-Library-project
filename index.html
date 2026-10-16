@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alexandria Digital Library — Catalog</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Make nav-btn work as links */
+    a.nav-btn {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    a.avatar {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="6" fill="#0d9488"/>
+        <path d="M6 20 L6 8 Q6 6 8 6 L20 6 Q22 6 22 8 L22 18 Q22 20 20 20 Z" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="10" y1="10" x2="18" y2="10" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="13" x2="18" y2="13" stroke="white" stroke-width="1.2"/>
+        <line x1="10" y1="16" x2="15" y2="16" stroke="white" stroke-width="1.2"/>
+      </svg>
+      Alexandria
+    </div>
+    <nav class="nav" id="main-nav">
+      <a class="nav-btn active" href="index.html">Catalog</a>
+      <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Academic Block</a>
+      <a class="nav-btn" href="member.html">My Account</a>
+      <a class="nav-btn" href="librarian.html">Librarian</a>
+      <a class="nav-btn" href="admin.html">Admin</a>
+      <a class="nav-btn" href="member.html" onclick="localStorage.setItem('user_role','member');localStorage.setItem('user_email','john.doe@email.com');localStorage.setItem('user_name','John Doe');" style="color:#10b981;font-weight:600">⚡ Member Bypass</a>
+      <a class="nav-btn" href="login.html" style="color:var(--teal);font-weight:600">🔐 Login</a>
+    </nav>
+    <div class="header-right">
+      <div class="branch-pill" onclick="showBranchModal()">
+        📍 <span id="current-branch">Main Branch</span>
+      </div>
+      <span class="role-badge" id="role-label">Guest</span>
+      <div class="avatar" id="user-avatar" style="cursor:pointer">?</div>
+    </div>
+  </header>
+
+  <!-- ── Catalog Page ────────────────────────────────────────────────── -->
+  <div class="page active" id="page-catalog">
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search by title, author, ISBN, or keyword..." id="catalog-search" oninput="filterBooks()">
+      </div>
+    </div>
+    <div class="filters" style="margin-bottom:16px">
+      <select class="form-select" style="width:auto" id="filter-genre" onchange="filterBooks()">
+        <option value="">All Categories & Subjects</option>
+        <option value="Class 10th NCERT">📚 Class 10th (NCERT)</option>
+        <option value="Class 12th Science">🧪 Class 12th Science (Physics/Chem/Bio)</option>
+        <option value="Class 12th Maths">📐 Class 12th Mathematics</option>
+        <option value="Class 12th Arts">🎨 Class 12th Arts & Humanities</option>
+        <option value="Commerce & Economics">💼 Commerce & Economics</option>
+        <option value="Competitive Exams">🎯 Competitive Exams (JEE/NEET/UPSC)</option>
+        <option value="Poetry & Literature">📜 Poetry & Literature</option>
+        <option value="Fiction">📖 Fiction & Novels</option>
+        <option value="Technology">💻 Computer & Technology</option>
+        <option value="Self-Help">🧠 Self-Help & Motivation</option>
+        <option value="History">🏛 History & Civics</option>
+        <option value="Biography">👤 Biography & Memoirs</option>
+        <option value="Philosophy">🕉 Philosophy & Heritage</option>
+      </select>
+      <select class="form-select" style="width:auto" id="filter-status" onchange="filterBooks()">
+        <option value="">All Status</option>
+        <option>Available</option><option>Borrowed</option><option>Reserved</option>
+      </select>
+      <select class="form-select" style="width:auto" id="filter-branch" onchange="filterBooks()">
+        <option value="">All Branches</option>
+        <option>Main Branch</option><option>North Branch</option><option>East Wing</option>
+      </select>
+    </div>
+    <div id="book-count" style="font-size:12px;color:var(--text3);margin-bottom:10px"></div>
+    <div class="book-grid" id="book-grid"></div>
+  </div>
+
+  <!-- ── Modal Overlay ────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modal-content"></div>
+  </div>
+
+  <!-- ── Notification Container ───────────────────────────────────── -->
+  <div class="notif" id="notif-container"></div>
+
+</div><!-- .app -->
+
+<!-- ── JavaScript Files ──────────────────────────────────────────── -->
+<script src="js/data.js"></script>
+<script src="js/books.js"></script>
+<script src="js/modals.js"></script>
+<script>
+  function showBranchModal() {
+    showModal('📍 Select Branch', `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${['Main Branch','North Branch','East Wing'].map(b => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--navy);border-radius:8px;cursor:pointer;border:1px solid var(--border)" onclick="switchBranch('${b}')">
+            <div><div style="font-size:14px;font-weight:500">${b}</div><div style="font-size:11px;color:var(--text3)">Open · Books available</div></div>
+            <span>→</span>
+          </div>
+        `).join('')}
+      </div>
+    `);
+  }
+
+  function switchBranch(b) {
+    document.getElementById('current-branch').textContent = b;
+    closeModal();
+    notify(`Switched to ${b}`, 'info');
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // ── Dynamic nav & avatar based on login state ──
+    const name  = localStorage.getItem('user_name')  || '';
+    const role  = localStorage.getItem('user_role')  || '';
+    const nav   = document.getElementById('main-nav');
+    const avatar = document.getElementById('user-avatar');
+    const roleLabel = document.getElementById('role-label');
+
+    if (name && role) {
+      // Logged in
+      const parts    = name.trim().split(' ').filter(Boolean);
+      const initials = parts.map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      if (avatar) { avatar.textContent = initials; }
+      if (roleLabel) roleLabel.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+      // Role-specific nav
+      let dashLink = '';
+      let dashHref = 'member.html';
+      if (role === 'admin')          { dashLink = 'Admin Panel'; dashHref = 'admin.html'; }
+      else if (role === 'librarian') { dashLink = 'Librarian Desk'; dashHref = 'librarian.html'; }
+      else                           { dashLink = 'My Account'; dashHref = 'member.html'; }
+
+      // Make avatar clickable to dashboard
+      if (avatar) { avatar.style.cursor = 'pointer'; avatar.onclick = () => window.location.href = dashHref; }
+
+      if (nav) nav.innerHTML = `
+        <a class="nav-btn active" href="index.html">Catalog</a>
+        <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Map</a>
+        <a class="nav-btn" href="${dashHref}">${dashLink}</a>
+        <a class="nav-btn" href="login.html" onclick="localStorage.removeItem('user_role')" style="color:var(--red);font-weight:600">🚪 Logout</a>
+      `;
+    } else {
+      // Guest / not logged in
+      if (avatar) { avatar.textContent = '?'; avatar.onclick = () => window.location.href = 'login.html'; }
+      if (roleLabel) roleLabel.textContent = 'Guest';
+      if (nav) nav.innerHTML = `
+        <a class="nav-btn active" href="index.html">Catalog</a>
+        <a class="nav-btn" href="academic-block-3d.html" style="color:#38bdf8;font-weight:600">🏛 3D Map</a>
+        <a class="nav-btn" href="login.html" style="color:var(--teal);font-weight:600">🔐 Login</a>
+      `;
+    }
+
+    // ── Load books ──
+    try {
+      await loadInitialData();
+      renderBooks(BOOKS, 'book-grid');
+      document.getElementById('book-count').textContent = `${BOOKS.length} books found`;
+    } catch (error) {
+      console.error('Failed to load books:', error);
+    }
+  });
+</script>
+</body>
+</html>

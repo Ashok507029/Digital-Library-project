@@ -1,0 +1,499 @@
+/* ==========================================================================
+   CAMPUSTOOLS - STUDENT ACADEMIC SUITE
+   Handcrafted & Designed by Vikas (B.Tech CSE)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg-main: #0b0f19;
+  --bg-surface: #111827;
+  --bg-card: #1e293b;
+  --bg-card-hover: #24334a;
+  --bg-input: #0f172a;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: #6366f1;
+
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: rgba(99, 102, 241, 0.12);
+
+  --accent-blue: #38bdf8;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+  --shadow-btn: 0 2px 10px rgba(99, 102, 241, 0.25);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Container */
+.app-container {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  flex: 1;
+}
+
+/* Header Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.4rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-card);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  background-color: var(--primary-light);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.brand-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+}
+
+.avatar-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+/* Navigation Pills */
+.pills-nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pills-nav {
+  display: flex;
+  background-color: var(--bg-surface);
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  gap: 0.25rem;
+}
+
+.pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill-btn:hover {
+  color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.pill-btn.active {
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: var(--shadow-btn);
+}
+
+/* Tab Panels */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dashboard Cards */
+.panel-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 1.5rem;
+}
+
+.panel-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input-control {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease;
+}
+
+.input-control:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background-color: #131c31;
+}
+
+select.input-control {
+  cursor: pointer;
+}
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.custom-table th {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.custom-table td {
+  padding: 0.6rem 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon-danger {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: var(--accent-rose);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-icon-danger:hover {
+  background-color: var(--accent-rose);
+  color: #fff;
+}
+
+.btn-flex {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Result KPI Metric Cards */
+.kpi-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-num {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  line-height: 1.1;
+  margin: 0.3rem 0;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-emerald { background-color: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+.status-amber { background-color: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+.status-rose { background-color: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+
+/* SVG Gauge */
+.metric-ring {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 10;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+}
+
+.ring-content {
+  position: absolute;
+  text-align: center;
+}
+
+.ring-val {
+  font-size: 1.85rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.ring-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Info Banner */
+.info-banner {
+  padding: 0.9rem 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.info-banner strong {
+  color: var(--text-main);
+}
+
+/* History List */
+.history-items {
+  list-style: none;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+}
+
+.history-row:last-child {
+  border-bottom: none;
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
+}
+
+@media (max-width: 600px) {
+  .app-container { padding: 1rem; }
+  .navbar { flex-direction: column; gap: 0.75rem; text-align: center; }
+  .pills-nav { width: 100%; }
+  .pill-btn { flex: 1; justify-content: center; padding: 0.5rem; font-size: 0.8rem; }
+}
